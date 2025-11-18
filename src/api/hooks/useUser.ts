@@ -1,0 +1,36 @@
+// api/hooks/useUser.ts
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/api/apiClient';
+import { getAuth } from '@/hooks/auth';
+import { toast } from 'sonner';
+import { AxiosError } from 'axios';
+
+interface User {
+  id: string;
+  name?: string | null;
+  email: string;
+  walletAddress?: string | null;
+  referralCode: string;
+  usdtBalance: string;
+  totalReferrals: number;
+  totalEarnings: string;
+  currentLevel: number;
+  createdAt: Date;
+  updatedAt: Date;
+  // Add other fields as needed from the full include
+}
+
+export const useUser = () => {
+  const { userId } = getAuth();
+
+  return useQuery<User, AxiosError>({
+    queryKey: ['user', userId],
+    queryFn: async () => {
+      if (!userId) throw new Error('User ID not available');
+      const { data } = await api.get(`/user/${userId}`);
+      return data.data;
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5 minutes stale time for freshness
+  });
+};

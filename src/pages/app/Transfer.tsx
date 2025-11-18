@@ -7,13 +7,22 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowRightLeft, AlertCircle, CheckCircle2, Wallet, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useUserTransfers, useCreateTransfer } from "@/api/hooks/useTransfers";
+import { useWallet } from "@/api/hooks/useWallet";
+import { AxiosError } from "axios";
+import { getAuth } from "@/hooks/auth";
 
 export default function Transfer() {
   const [formData, setFormData] = useState({
     recipient: "",
     amount: "",
+    note: "",
   });
-  const availableBalance = 16105.0;
+  const { data: wallet, isLoading: walletLoading } = useWallet();
+  const { data: transfers = [], isLoading: transfersLoading } = useUserTransfers();
+  const createMutation = useCreateTransfer();
+
+  const availableBalance = wallet ? parseFloat(wallet.balance.toString()) : 0;
   const minTransfer = 10.0;
 
   const handleTransfer = (e: React.FormEvent) => {
@@ -22,7 +31,7 @@ export default function Transfer() {
     const transferAmount = parseFloat(formData.amount);
 
     if (!formData.recipient) {
-      toast.error("Please enter recipient wallet ID or referral code");
+      toast.error("Please enter recipient user ID");
       return;
     }
 
@@ -41,9 +50,36 @@ export default function Transfer() {
       return;
     }
 
-    toast.success(`Transfer of $${formData.amount} to ${formData.recipient} successful!`);
-    setFormData({ recipient: "", amount: "" });
+    createMutation.mutate({
+      receiverId: formData.recipient.trim(),
+      amount: transferAmount,
+      note: formData.note.trim() || undefined,
+    });
+    setFormData({ recipient: "", amount: "", note: "" });
   };
+
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case "SUCCESS":
+        return "bg-success/20 text-success";
+      case "PENDING":
+        return "bg-warning/20 text-warning";
+      case "FAILED":
+        return "bg-destructive/20 text-destructive";
+      default:
+        return "bg-secondary/20 text-secondary";
+    }
+  };
+
+  if (walletLoading || transfersLoading) {
+    return (
+      <AppLayout>
+        <div className="space-y-6">
+          <div className="text-center">Loading transfer information...</div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -74,22 +110,23 @@ export default function Transfer() {
 
               <form onSubmit={handleTransfer} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="recipient">Recipient</Label>
+                  <Label htmlFor="recipient">Recipient User ID</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <Input
                       id="recipient"
                       type="text"
-                      placeholder="Wallet ID or Referral Code"
+                      placeholder="Enter recipient user ID"
                       className="pl-10 glass"
                       value={formData.recipient}
                       onChange={(e) =>
                         setFormData({ ...formData, recipient: e.target.value })
                       }
+                      disabled={createMutation.isPending}
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Enter recipient's wallet address or referral code
+                    Enter recipient's user ID
                   </p>
                 </div>
 
@@ -109,6 +146,7 @@ export default function Transfer() {
                       onChange={(e) =>
                         setFormData({ ...formData, amount: e.target.value })
                       }
+                      disabled={createMutation.isPending}
                     />
                   </div>
                   <div className="flex justify-between text-sm">
@@ -121,10 +159,26 @@ export default function Transfer() {
                         setFormData({ ...formData, amount: availableBalance.toString() })
                       }
                       className="text-primary hover:underline"
+                      disabled={createMutation.isPending}
                     >
                       Max: ${availableBalance.toFixed(2)}
                     </button>
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="note">Note (Optional)</Label>
+                  <Input
+                    id="note"
+                    type="text"
+                    placeholder="Add a note for the transfer"
+                    className="glass"
+                    value={formData.note}
+                    onChange={(e) =>
+                      setFormData({ ...formData, note: e.target.value })
+                    }
+                    disabled={createMutation.isPending}
+                  />
                 </div>
 
                 <Alert className="glass border-warning/30">
@@ -155,14 +209,15 @@ export default function Transfer() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Button type="submit" className="bg-gradient-primary glow">
-                    Send Transfer
+                  <Button type="submit" className="bg-gradient-primary glow" disabled={createMutation.isPending}>
+                    {createMutation.isPending ? "Sending..." : "Send Transfer"}
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     className="border-primary/30"
-                    onClick={() => setFormData({ recipient: "", amount: "" })}
+                    onClick={() => setFormData({ recipient: "", amount: "", note: "" })}
+                    disabled={createMutation.isPending}
                   >
                     Clear Form
                   </Button>
@@ -195,6 +250,7 @@ export default function Transfer() {
                     variant="outline"
                     className="border-primary/30"
                     onClick={() => setFormData({ ...formData, amount: value.toString() })}
+                    disabled={createMutation.isPending}
                   >
                     ${value}
                   </Button>
@@ -247,33 +303,44 @@ export default function Transfer() {
             Recent Transfers
           </h3>
           <div className="space-y-3">
-            {[
-              { recipient: "JD12345", amount: "250.00", date: "2024-06-21", type: "Sent" },
-              { recipient: "AB67890", amount: "500.00", date: "2024-06-20", type: "Received" },
-              { recipient: "XY11223", amount: "100.00", date: "2024-06-19", type: "Sent" },
-            ].map((transfer, index) => (
-              <div
-                key={index}
-                className="glass p-4 rounded-lg flex items-center justify-between"
-              >
-                <div>
-                  <p className="font-medium text-foreground">
-                    {transfer.type === "Sent" ? "To" : "From"}: {transfer.recipient}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{transfer.date}</p>
+            {transfers.slice(0, 3).map((transfer) => {
+              const isSent = transfer.senderId === (getAuth().userId || '');
+              const recipientOrSender = isSent ? transfer.receiver.name : transfer.sender.name;
+              const type = isSent ? "Sent" : "Received";
+              const sign = isSent ? "-" : "+";
+
+              return (
+                <div
+                  key={transfer.id}
+                  className="glass p-4 rounded-lg flex items-center justify-between"
+                >
+                  <div>
+                    <p className="font-medium text-foreground">
+                      {type === "Sent" ? "To" : "From"}: {recipientOrSender}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(transfer.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p
+                      className={`font-bold ${type === "Sent" ? "text-destructive" : "text-success"
+                        }`}
+                    >
+                      {sign}${transfer.amount.toFixed(2)}
+                    </p>
+                    <div
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(transfer.status)}`}
+                    >
+                      {transfer.status}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p
-                    className={`font-bold ${
-                      transfer.type === "Sent" ? "text-destructive" : "text-success"
-                    }`}
-                  >
-                    {transfer.type === "Sent" ? "-" : "+"}${transfer.amount}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{transfer.type}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
+            {transfers.length === 0 && (
+              <p className="text-center text-muted-foreground py-4">No recent transfers</p>
+            )}
           </div>
         </Card>
       </div>

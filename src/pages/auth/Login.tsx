@@ -6,24 +6,42 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { TrendingUp, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { api } from "@/api/apiClient";
+import { ErrorMessage } from "@/utils/utils";
 
 export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Mock login - in real app would validate with backend
-    if (formData.email && formData.password) {
+
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const res = await api.post("/user/login", formData);
+      console.log(res.data);
+
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", res.data.data.id);
+      }
+
       toast.success("Login successful!");
       navigate("/app/dashboard");
-    } else {
-      toast.error("Please fill in all fields");
+    } catch (error) {
+      ErrorMessage(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,6 +74,7 @@ export default function Login() {
                   className="pl-10 glass"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -71,11 +90,13 @@ export default function Login() {
                   className="pl-10 pr-10 glass"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -84,7 +105,7 @@ export default function Login() {
 
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="rounded border-primary" />
+                <input type="checkbox" className="rounded border-primary" disabled={isLoading} />
                 <span className="text-muted-foreground">Remember me</span>
               </label>
               <a href="#" className="text-primary hover:underline">
@@ -92,11 +113,12 @@ export default function Login() {
               </a>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-gradient-primary glow-pulse text-lg py-6"
+              disabled={isLoading}
             >
-              Sign In
+              {isLoading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
 

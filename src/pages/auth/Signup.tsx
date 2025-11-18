@@ -4,25 +4,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { TrendingUp, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { TrendingUp, Mail, Lock, User, Eye, EyeOff, Wallet, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import axios from "axios";
+import { api } from "@/api/apiClient";
 
 export default function Signup() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    walletAddress: "",
+    referredByCode: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      toast.error("Please fill in all fields");
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -36,8 +41,42 @@ export default function Signup() {
       return;
     }
 
-    toast.success("Account created successfully!");
-    navigate("/app/dashboard");
+    setIsLoading(true);
+    try {
+      const postData: any = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      };
+
+      if (formData.walletAddress.trim()) {
+        postData.walletAddress = formData.walletAddress.trim();
+      }
+
+      if (formData.referredByCode.trim()) {
+        postData.referredByCode = formData.referredByCode.trim();
+      }
+
+      const response = await api.post(
+        "/user/create",
+        postData,
+        { withCredentials: true }
+      );
+
+      console.log(response.data);
+
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("userId", response.data.data.id);
+      }
+
+      toast.success("Account created successfully!");
+      navigate("/app/dashboard");
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to create account");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -69,6 +108,7 @@ export default function Signup() {
                   className="pl-10 glass"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
                 />
               </div>
             </div>
@@ -84,8 +124,41 @@ export default function Signup() {
                   className="pl-10 glass"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="walletAddress">Wallet Address (Optional)</Label>
+              <div className="relative">
+                <Wallet className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  id="walletAddress"
+                  type="text"
+                  placeholder="0x1234567890abcdef..."
+                  className="pl-10 glass"
+                  value={formData.walletAddress}
+                  onChange={(e) => setFormData({ ...formData, walletAddress: e.target.value })}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">Enter your USDT wallet address for deposits and withdrawals.</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="referredByCode">Referral Code (Optional)</Label>
+              <div className="relative">
+                <Share2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  id="referredByCode"
+                  type="text"
+                  placeholder="Enter referral code"
+                  className="pl-10 glass"
+                  value={formData.referredByCode}
+                  onChange={(e) => setFormData({ ...formData, referredByCode: e.target.value })}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">Use a referral code to earn bonus rewards.</p>
             </div>
 
             <div className="space-y-2">
@@ -99,11 +172,13 @@ export default function Signup() {
                   className="pl-10 pr-10 glass"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -121,11 +196,13 @@ export default function Signup() {
                   className="pl-10 pr-10 glass"
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  required
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  disabled={isLoading}
                 >
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -133,7 +210,7 @@ export default function Signup() {
             </div>
 
             <div className="flex items-start gap-2 text-sm">
-              <input type="checkbox" required className="mt-1 rounded border-primary" />
+              <input type="checkbox" required className="mt-1 rounded border-primary" disabled={isLoading} />
               <span className="text-muted-foreground">
                 I agree to the{" "}
                 <a href="#" className="text-primary hover:underline">
@@ -146,11 +223,12 @@ export default function Signup() {
               </span>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-gradient-primary glow-pulse text-lg py-6"
+              disabled={isLoading}
             >
-              Create Account
+              {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
           </form>
 

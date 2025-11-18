@@ -7,10 +7,17 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowUpFromLine, AlertCircle, CheckCircle2, Wallet } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useUserWithdrawals, useCreateWithdrawal } from "@/api/hooks/useWithdrawals";
+import { useWallet } from "@/api/hooks/useWallet";
 
 export default function Withdraw() {
   const [amount, setAmount] = useState("");
-  const availableBalance = 16105.0;
+  const [destinationAddress, setDestinationAddress] = useState("");
+  const { data: wallet, isLoading: walletLoading } = useWallet();
+  const { data: withdrawals = [], isLoading: withdrawalsLoading } = useUserWithdrawals();
+  const createMutation = useCreateWithdrawal();
+
+  const availableBalance = wallet ? parseFloat(wallet.balance) : 0;
   const minWithdraw = 10.0;
 
   const handleWithdraw = (e: React.FormEvent) => {
@@ -20,6 +27,11 @@ export default function Withdraw() {
 
     if (!amount || isNaN(withdrawAmount)) {
       toast.error("Please enter a valid amount");
+      return;
+    }
+
+    if (!destinationAddress.trim()) {
+      toast.error("Please enter a destination address");
       return;
     }
 
@@ -33,9 +45,34 @@ export default function Withdraw() {
       return;
     }
 
-    toast.success(`Withdrawal request for $${amount} submitted successfully!`);
+    createMutation.mutate({ amount: withdrawAmount, destinationAddress: destinationAddress.trim() });
     setAmount("");
+    setDestinationAddress("");
   };
+
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case "APPROVED":
+      case "COMPLETED":
+        return "bg-success/20 text-success";
+      case "PENDING":
+        return "bg-warning/20 text-warning";
+      case "REJECTED":
+        return "bg-destructive/20 text-destructive";
+      default:
+        return "bg-secondary/20 text-secondary";
+    }
+  };
+
+  if (walletLoading || withdrawalsLoading) {
+    return (
+      <AppLayout>
+        <div className="space-y-6">
+          <div className="text-center">Loading withdrawal information...</div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -79,6 +116,7 @@ export default function Withdraw() {
                       className="pl-7 glass text-lg"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
+                      disabled={createMutation.isPending}
                     />
                   </div>
                   <div className="flex justify-between text-sm">
@@ -89,6 +127,7 @@ export default function Withdraw() {
                       type="button"
                       onClick={() => setAmount(availableBalance.toString())}
                       className="text-primary hover:underline"
+                      disabled={createMutation.isPending}
                     >
                       Max: ${availableBalance.toFixed(2)}
                     </button>
@@ -102,6 +141,9 @@ export default function Withdraw() {
                     type="text"
                     placeholder="Enter your wallet address"
                     className="glass"
+                    value={destinationAddress}
+                    onChange={(e) => setDestinationAddress(e.target.value)}
+                    disabled={createMutation.isPending}
                   />
                   <p className="text-xs text-muted-foreground">
                     Enter USDT (TRC-20) wallet address
@@ -119,14 +161,19 @@ export default function Withdraw() {
                   <Button
                     type="submit"
                     className="bg-gradient-primary glow"
+                    disabled={createMutation.isPending}
                   >
-                    Submit Withdrawal
+                    {createMutation.isPending ? "Submitting..." : "Submit Withdrawal"}
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     className="border-primary/30"
-                    onClick={() => setAmount("")}
+                    onClick={() => {
+                      setAmount("");
+                      setDestinationAddress("");
+                    }}
+                    disabled={createMutation.isPending}
                   >
                     Clear Form
                   </Button>
@@ -159,6 +206,7 @@ export default function Withdraw() {
                     variant="outline"
                     className="border-primary/30"
                     onClick={() => setAmount(value.toString())}
+                    disabled={createMutation.isPending}
                   >
                     ${value}
                   </Button>
@@ -211,30 +259,27 @@ export default function Withdraw() {
             Recent Withdrawals
           </h3>
           <div className="space-y-3">
-            {[
-              { amount: "500.00", status: "Completed", date: "2024-06-15" },
-              { amount: "1,200.00", status: "Processing", date: "2024-06-20" },
-              { amount: "750.00", status: "Completed", date: "2024-06-18" },
-            ].map((withdrawal, index) => (
+            {withdrawals.slice(0, 3).map((withdrawal) => (
               <div
-                key={index}
+                key={withdrawal.id}
                 className="glass p-4 rounded-lg flex items-center justify-between"
               >
                 <div>
-                  <p className="font-medium text-foreground">${withdrawal.amount}</p>
-                  <p className="text-sm text-muted-foreground">{withdrawal.date}</p>
+                  <p className="font-medium text-foreground">${withdrawal.amount.toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(withdrawal.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
                 <div
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    withdrawal.status === "Completed"
-                      ? "bg-success/20 text-success"
-                      : "bg-warning/20 text-warning"
-                  }`}
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(withdrawal.status)}`}
                 >
                   {withdrawal.status}
                 </div>
               </div>
             ))}
+            {withdrawals.length === 0 && (
+              <p className="text-center text-muted-foreground py-4">No recent withdrawals</p>
+            )}
           </div>
         </Card>
       </div>
