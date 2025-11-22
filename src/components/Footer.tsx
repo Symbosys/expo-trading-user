@@ -1,5 +1,5 @@
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, TrendingUp, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
-import { TrendingUp, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 
 export function Footer() {
   return (
@@ -34,6 +34,12 @@ export function Footer() {
               </Link>
               <Link to="/app/dashboard" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
                 Dashboard
+              </Link>
+              <Link to="/app/privacy-policy" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+               Privacy Policy
+              </Link>
+              <Link to="/app/terms-of-service" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                Terms of Service
               </Link>
             </div>
           </div>

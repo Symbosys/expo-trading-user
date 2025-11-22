@@ -1,10 +1,12 @@
-import { AppLayout } from "@/components/AppLayout";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, TrendingUp } from "lucide-react";
-import { toast } from "sonner";
 import { useSubscriptionPlans } from "@/api/hooks/useSubscription";
+import { AppLayout } from "@/components/AppLayout";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { CheckCircle2, TrendingUp } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { api } from "../../api/apiClient"; // Use path alias to resolve the client module
+
 
 // Static mappings for colors and features (since backend doesn't provide them)
 const planColors = [
@@ -55,10 +57,23 @@ export default function Subscriptions() {
   const { data: plans = [], isLoading, error } = useSubscriptionPlans();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
-  const handleInvest = (planName: string) => {
-    setSelectedPlan(planName);
-    toast.success(`${planName} selected! Redirecting to payment...`);
-    // TODO: Integrate payment flow later
+  const handleInvest = async (planName: string, plan: any) => {
+    try {
+      setSelectedPlan(planName);
+      // Use minimum investment as default amount; in a real app, prompt user for custom amount
+      const response = await api.post('/payment/checkout', {
+        amount: plan.minimumInvestment,
+        currency: 'USD', // Adjust to 'USDT' if backend supports it; Coinbase defaults to supported fiat/crypto
+      });
+      const charge = response.data.charge;
+      // Redirect to Coinbase hosted checkout page
+      window.open(charge.hosted_url, '_blank');
+      toast.success(`${planName} selected! Payment initiated via Coinbase.`);
+      // TODO: Poll or use webhook to confirm and activate subscription
+    } catch (err: any) {
+      console.error('Payment initiation failed:', err);
+      toast.error(`Failed to initiate ${planName} investment. Please try again.`);
+    }
   };
 
   if (isLoading) {
@@ -178,7 +193,7 @@ export default function Subscriptions() {
                       ? "bg-gradient-primary glow"
                       : "bg-primary/20 hover:bg-primary/30"
                     }`}
-                  onClick={() => handleInvest(plan.name)}
+                  onClick={() => handleInvest(plan.name, plan)}
                 >
                   Invest Now
                 </Button>

@@ -68,6 +68,9 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/termand condition/privecy";
+import TermsOfService from "./pages/termand condition/term";
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -112,6 +115,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/signup" element={<Signup />} />
+            <Route path="/app/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/app/terms-of-service" element={<TermsOfService />} />
           </Route>
 
           {/* Protected routes */}
@@ -126,6 +131,7 @@ const App = () => (
             <Route path="transactions" element={<Transactions />} />
             <Route path="referrals" element={<Referrals />} />
             <Route path="settings" element={<Settings />} />
+            
           </Route>
 
           {/* Catch-all */}
