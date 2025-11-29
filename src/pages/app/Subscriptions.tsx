@@ -1,11 +1,14 @@
+import { api } from "@/api/apiClient"; // Assuming this is your API client; adjust path if needed
 import { useSubscriptionPlans } from "@/api/hooks/useSubscription";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { CheckCircle2, TrendingUp } from "lucide-react";
 import { useState } from "react";
+import { QRCode } from "react-qrcode-logo"; // Assuming this library is installed; fallback to static image if not
 import { toast } from "sonner";
-import { api } from "../../api/apiClient"; // Use path alias to resolve the client module
 
 
 // Static mappings for colors and features (since backend doesn't provide them)
@@ -55,24 +58,47 @@ const staticFeatures = [
 
 export default function Subscriptions() {
   const { data: plans = [], isLoading, error } = useSubscriptionPlans();
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [transactionId, setTransactionId] = useState("");
 
-  const handleInvest = async (planName: string, plan: any) => {
+  const handleInvest = (planName: string, plan) => {
+    setSelectedPlan({ name: planName, ...plan });
+    setIsModalOpen(true);
+    setTransactionId("");
+  };
+
+  const handleSubmit = async () => {
+    if (!transactionId.trim()) {
+      toast.error("Please enter a transaction ID.");
+      return;
+    }
+
     try {
-      setSelectedPlan(planName);
-      // Use minimum investment as default amount; in a real app, prompt user for custom amount
-      const response = await api.post('/payment/checkout', {
-        amount: plan.minimumInvestment,
-        currency: 'USD', // Adjust to 'USDT' if backend supports it; Coinbase defaults to supported fiat/crypto
+      // Assume userId is obtained from authentication context (e.g., useAuth hook)
+      const userId = "d0f80b8c-2d23-4bea-bf50-f64e2003c556"; // TODO: Replace with actual user ID from auth (e.g., useAuth().user.id)
+
+      const startDate = new Date().toISOString();
+      const endDate = new Date(Date.now() + selectedPlan.durationInMonths * 30 * 24 * 60 * 60 * 1000).toISOString(); // Approximate months as 30 days
+
+      const response = await api.post('/investment/create', { // Matches the route: investmentRoutes.post('/create', ...)
+        userId,
+        planId: selectedPlan.id,
+        amountInvested: selectedPlan.minimumInvestment,
+        roiPercentage: selectedPlan.roiPerMonth * 100, // Convert to percentage if backend expects it
+        startDate,
+        endDate,
+        transactionId, // Include TX ID; backend can ignore or store if schema updated
       });
-      const charge = response.data.charge;
-      // Redirect to Coinbase hosted checkout page
-      window.open(charge.hosted_url, '_blank');
-      toast.success(`${planName} selected! Payment initiated via Coinbase.`);
-      // TODO: Poll or use webhook to confirm and activate subscription
-    } catch (err: any) {
-      console.error('Payment initiation failed:', err);
-      toast.error(`Failed to initiate ${planName} investment. Please try again.`);
+
+      if (response.status === 201) { // StatusCodes.CREATED
+        toast.success(`Investment for ${selectedPlan?.name} created successfully with TX ID: ${transactionId}. We'll verify shortly.`);
+      }
+    } catch (err) {
+      console.error('Investment creation failed:', err);
+      toast.error(`Failed to create investment: ${err.response?.data?.error || 'Please try again.'}`);
+    } finally {
+      setIsModalOpen(false);
     }
   };
 
@@ -103,6 +129,9 @@ export default function Subscriptions() {
       </AppLayout>
     );
   }
+
+  const walletAddress = "0x742d35Cc6b0eA849c6cD3aD5a793cF9C8b6f2d5e"; // Example USDT wallet address
+  const qrValue = `USDT:${walletAddress}?amount=${selectedPlan?.minimumInvestment || 100}`; // QR data for USDT payment
 
   return (
     <AppLayout>
@@ -239,6 +268,42 @@ export default function Subscriptions() {
             </div>
           </div>
         </Card>
+
+        {/* Payment Modal */}
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent className="glass-card max-w-sm p-0">
+            <DialogHeader className="p-6 border-b">
+              <DialogTitle className="text-2xl font-bold text-foreground">
+                Invest in {selectedPlan?.name}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="p-6 space-y-4">
+              <div className="text-center space-y-2">
+                <p className="text-sm text-muted-foreground">Send USDT to:</p>
+                <div className="bg-bla-100 p-2 rounded-lg inline-block">
+                  <code className="text-xs font-mono break-all text-foreground">{walletAddress}</code>
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <QRCode value={qrValue} size={200} />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Enter Transaction ID
+                </label>
+                <Input
+                  value={transactionId}
+                  onChange={(e) => setTransactionId(e.target.value)}
+                  placeholder="e.g., 0x123..."
+                  className="w-full"
+                />
+              </div>
+              <Button onClick={handleSubmit} className="w-full bg-gradient-primary glow">
+                Submit
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );
