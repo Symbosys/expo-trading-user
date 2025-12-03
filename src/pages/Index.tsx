@@ -4,7 +4,7 @@ import { CryptoMarquee } from "@/components/CryptoMarquee";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { TrendingUp, Shield, Users, Zap, CheckCircle2, ArrowRight } from "lucide-react";
+import { TrendingUp, Shield, Users, Zap, CheckCircle2, ArrowRight, User } from "lucide-react";
 import heroImage from "@/assets/hero-bg.jpg";
 import cryptoAbstract from "@/assets/crypto-abstract.jpg";
 
@@ -150,6 +150,34 @@ export default function Index() {
                 alt="Crypto Investment"
                 className="relative rounded-2xl shadow-2xl glass-card"
               />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* User Stats Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-card to-background">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">
+              Join Our Growing <span className="gradient-text">Community</span>
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Thousands of satisfied investors trust CryptoInvest for their crypto journey.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="glass-card p-8 rounded-2xl text-center">
+              <User className="w-16 h-16 text-primary mx-auto mb-4 opacity-20" />
+              <div className="text-5xl font-bold gradient-text mb-2">10,000+</div>
+              <div className="text-xl font-semibold text-foreground">Active Users</div>
+              <p className="text-sm text-muted-foreground mt-2">Investing daily with guaranteed returns</p>
+            </div>
+            <div className="glass-card p-8 rounded-2xl text-center">
+              <Users className="w-16 h-16 text-primary mx-auto mb-4 opacity-20" />
+              <div className="text-5xl font-bold gradient-text mb-2">50,000+</div>
+              <div className="text-xl font-semibold text-foreground">Total Users</div>
+              <p className="text-sm text-muted-foreground mt-2">Join the largest crypto investment network</p>
             </div>
           </div>
         </div>

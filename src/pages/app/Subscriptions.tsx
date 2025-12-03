@@ -1,4 +1,4 @@
-import { api } from "@/api/apiClient"; // Assuming this is your API client; adjust path if needed
+import { api } from "@/api/apiClient";
 import { useSubscriptionPlans } from "@/api/hooks/useSubscription";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -7,11 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { CheckCircle2, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import { QRCode } from "react-qrcode-logo"; // Assuming this library is installed; fallback to static image if not
+
+import { QRCode } from "react-qrcode-logo";
 import { toast } from "sonner";
 
-
-// Static mappings for colors and features (since backend doesn't provide them)
 const planColors = [
   "from-orange-500 to-yellow-600",
   "from-gray-400 to-gray-600",
@@ -75,30 +74,45 @@ export default function Subscriptions() {
     }
 
     try {
-      // Assume userId is obtained from authentication context (e.g., useAuth hook)
-      const userId = "d0f80b8c-2d23-4bea-bf50-f64e2003c556"; // TODO: Replace with actual user ID from auth (e.g., useAuth().user.id)
+      // Get userId from localStorage (set during login)
+      const userId = localStorage.getItem("userId"); // Make sure this is set during login
+      
+      if (!userId) {
+        toast.error("User not found. Please login again.");
+        return;
+      }
 
       const startDate = new Date().toISOString();
-      const endDate = new Date(Date.now() + selectedPlan.durationInMonths * 30 * 24 * 60 * 60 * 1000).toISOString(); // Approximate months as 30 days
+      const endDate = new Date(Date.now() + selectedPlan.durationInMonths * 30 * 24 * 60 * 60 * 1000).toISOString();
 
-      const response = await api.post('/investment/create', { // Matches the route: investmentRoutes.post('/create', ...)
+      // Calculate ROI based on what's available in the plan
+      let roiPercentage;
+      if (selectedPlan.roiPerMonth) {
+        roiPercentage = Number(selectedPlan.roiPerMonth) * 100; // Convert decimal to percentage
+      } else if (selectedPlan.roiPerDay) {
+        roiPercentage = Number(selectedPlan.roiPerDay) * 100; // Convert decimal to percentage
+      } else {
+        roiPercentage = 0;
+      }
+
+      const response = await api.post('/subscription/create', {
         userId,
         planId: selectedPlan.id,
-        amountInvested: selectedPlan.minimumInvestment,
-        roiPercentage: selectedPlan.roiPerMonth * 100, // Convert to percentage if backend expects it
+        amountInvested: Number(selectedPlan.minimumInvestment),
+        roiPercentage,
         startDate,
         endDate,
-        transactionId, // Include TX ID; backend can ignore or store if schema updated
+        transactionId,
       });
 
-      if (response.status === 201) { // StatusCodes.CREATED
-        toast.success(`Investment for ${selectedPlan?.name} created successfully with TX ID: ${transactionId}. We'll verify shortly.`);
+      if (response.status === 201) {
+        toast.success(`Investment for ${selectedPlan?.name} created successfully! Transaction ID: ${transactionId}`);
+        setIsModalOpen(false);
+        setTransactionId("");
       }
     } catch (err) {
       console.error('Investment creation failed:', err);
       toast.error(`Failed to create investment: ${err.response?.data?.error || 'Please try again.'}`);
-    } finally {
-      setIsModalOpen(false);
     }
   };
 
@@ -130,13 +144,12 @@ export default function Subscriptions() {
     );
   }
 
-  const walletAddress = "0x742d35Cc6b0eA849c6cD3aD5a793cF9C8b6f2d5e"; // Example USDT wallet address
-  const qrValue = `USDT:${walletAddress}?amount=${selectedPlan?.minimumInvestment || 100}`; // QR data for USDT payment
+  const walletAddress = "0x742d35Cc6b0eA849c6cD3aD5a793cF9C8b6f2d5e";
+  const qrValue = `USDT:${walletAddress}?amount=${selectedPlan?.minimumInvestment || 100}`;
 
   return (
     <AppLayout>
       <div className="space-y-6">
-        {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">
             Investment <span className="gradient-text">Plans</span>
@@ -146,21 +159,31 @@ export default function Subscriptions() {
           </p>
         </div>
 
-        {/* Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {plans.map((plan, index) => {
-            const isPopular = index === 1; // Example: Second plan is popular
+            const isPopular = index === 1;
             const color = planColors[index % planColors.length];
             const features = staticFeatures[index % staticFeatures.length];
             const term = `${plan.durationInMonths} Months`;
-            const roi = `${(plan.roiPerMonth * 100).toFixed(0)}% Monthly`;
-            const min = plan.minimumInvestment.toLocaleString();
+            
+            // Display ROI based on what's available
+            let roiDisplay;
+            if (plan.roiPerMonth) {
+              roiDisplay = `${(Number(plan.roiPerMonth) * 100).toFixed(2)}% Monthly`;
+            } else if (plan.roiPerDay) {
+              roiDisplay = `${(Number(plan.roiPerDay) * 100).toFixed(2)}% Daily`;
+            } else {
+              roiDisplay = "Contact for ROI";
+            }
+            
+            const min = Number(plan.minimumInvestment).toLocaleString();
 
             return (
               <Card
                 key={plan.id}
-                className={`glass-card p-6 relative transition-all hover:scale-[1.02] ${isPopular ? "border-primary glow" : ""
-                  }`}
+                className={`glass-card p-6 relative transition-all hover:scale-[1.02] ${
+                  isPopular ? "border-primary glow" : ""
+                }`}
               >
                 {isPopular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -170,7 +193,6 @@ export default function Subscriptions() {
                   </div>
                 )}
 
-                {/* Plan Header */}
                 <div className="mb-6">
                   <div className="flex items-center gap-3 mb-4">
                     <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center glow`}>
@@ -185,14 +207,13 @@ export default function Subscriptions() {
                   <div className="glass p-4 rounded-lg">
                     <div className="text-center">
                       <div className="text-3xl font-bold gradient-text mb-1">
-                        {roi}
+                        {roiDisplay}
                       </div>
                       <p className="text-sm text-muted-foreground">Guaranteed Returns</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Investment Range */}
                 <div className="glass p-4 rounded-lg mb-6">
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
@@ -206,7 +227,6 @@ export default function Subscriptions() {
                   </div>
                 </div>
 
-                {/* Features */}
                 <div className="space-y-3 mb-6">
                   {features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-2">
@@ -216,12 +236,12 @@ export default function Subscriptions() {
                   ))}
                 </div>
 
-                {/* CTA Button */}
                 <Button
-                  className={`w-full ${isPopular
+                  className={`w-full ${
+                    isPopular
                       ? "bg-gradient-primary glow"
                       : "bg-primary/20 hover:bg-primary/30"
-                    }`}
+                  }`}
                   onClick={() => handleInvest(plan.name, plan)}
                 >
                   Invest Now
@@ -231,7 +251,6 @@ export default function Subscriptions() {
           })}
         </div>
 
-        {/* Info Card */}
         <Card className="glass-card p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             How Investment Plans Work
@@ -269,7 +288,6 @@ export default function Subscriptions() {
           </div>
         </Card>
 
-        {/* Payment Modal */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="glass-card max-w-sm p-0">
             <DialogHeader className="p-6 border-b">
@@ -280,7 +298,7 @@ export default function Subscriptions() {
             <div className="p-6 space-y-4">
               <div className="text-center space-y-2">
                 <p className="text-sm text-muted-foreground">Send USDT to:</p>
-                <div className="bg-bla-100 p-2 rounded-lg inline-block">
+                <div className="bg-black/20 p-2 rounded-lg inline-block">
                   <code className="text-xs font-mono break-all text-foreground">{walletAddress}</code>
                 </div>
               </div>
