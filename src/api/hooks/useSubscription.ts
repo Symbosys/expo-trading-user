@@ -1,26 +1,31 @@
-// api/hooks/useSubscriptionPlans.ts
-import { useQuery } from '@tanstack/react-query';
 import { api } from '@/api/apiClient';
-import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
 interface SubscriptionPlan {
   id: string;
   name: string;
   minimumInvestment: number;
-  roiPerMonth: number;
+  maximumInvestment: number;
+  roiPerMonth?: number;
+  roiPerDay?: number;
   durationInMonths: number;
   description?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  isSubscribed?: boolean;
 }
 
-export const useSubscriptionPlans = () => {
+export const useSubscriptionPlans = (id?: string) => {
   return useQuery<SubscriptionPlan[], AxiosError>({
-    queryKey: ['subscriptionPlans'],
+    queryKey: ['subscriptionPlans', id],
     queryFn: async () => {
-      const { data } = await api.get('/subscription/all');
+      const { data } = await api.get('/subscription/all', {
+        params: {
+          id,
+        },
+      });
       return data.data;
       },
   });

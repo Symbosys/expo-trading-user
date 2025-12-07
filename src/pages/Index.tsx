@@ -1,12 +1,12 @@
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import cryptoAbstract from "@/assets/crypto-abstract.jpg";
+import heroImage from "@/assets/hero-bg.jpg";
 import { CryptoMarquee } from "@/components/CryptoMarquee";
+import { Footer } from "@/components/Footer";
+import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ArrowRight, CheckCircle2, Shield, TrendingUp, User, Users, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
-import { TrendingUp, Shield, Users, Zap, CheckCircle2, ArrowRight, User } from "lucide-react";
-import heroImage from "@/assets/hero-bg.jpg";
-import cryptoAbstract from "@/assets/crypto-abstract.jpg";
 
 const subscriptionPlans = [
   {
@@ -37,6 +37,7 @@ const subscriptionPlans = [
 ];
 
 export default function Index() {
+
   return (
     <div className="min-h-screen">
       <Navbar />

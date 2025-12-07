@@ -1,13 +1,12 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { api } from "@/api/apiClient";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
-import { TrendingUp, Mail, Lock, User, Eye, EyeOff, Wallet, Share2 } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, Share2, TrendingUp, User, Wallet } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import axios from "axios";
-import { api } from "@/api/apiClient";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -26,7 +25,7 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword || !formData.referredByCode) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -53,9 +52,7 @@ export default function Signup() {
         postData.walletAddress = formData.walletAddress.trim();
       }
 
-      if (formData.referredByCode.trim()) {
-        postData.referredByCode = formData.referredByCode.trim();
-      }
+      postData.referredByCode = formData.referredByCode.trim();
 
       const response = await api.post(
         "/user/create",
@@ -146,7 +143,7 @@ export default function Signup() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="referredByCode">Referral Code (Optional)</Label>
+              <Label htmlFor="referredByCode">Referral Code</Label>
               <div className="relative">
                 <Share2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
@@ -156,6 +153,7 @@ export default function Signup() {
                   className="pl-10 glass"
                   value={formData.referredByCode}
                   onChange={(e) => setFormData({ ...formData, referredByCode: e.target.value })}
+                  required
                 />
               </div>
               <p className="text-xs text-muted-foreground">Use a referral code to earn bonus rewards.</p>

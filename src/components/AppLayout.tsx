@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   LogOut,
+  Bell,
 } from "lucide-react";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -34,6 +35,7 @@ const menuItems = [
   { icon: ArrowRightLeft, label: "Transfer", path: "/app/transfer" },
   { icon: Receipt, label: "Transactions", path: "/app/transactions" },
   { icon: Users, label: "Referrals", path: "/app/referrals" },
+  { icon: Bell, label: "Notifications", path: "/app/notifications" },
   { icon: Settings, label: "Settings", path: "/app/settings" },
 ];
 
@@ -110,8 +112,8 @@ export function AppLayout({ children }: AppLayoutProps) {
                   <Button
                     variant="ghost"
                     className={`w-full justify-start gap-3 ${isActive
-                        ? "bg-primary/20 text-primary glow"
-                        : "text-muted-foreground hover:text-foreground hover:bg-primary/10"
+                      ? "bg-primary/20 text-primary glow"
+                      : "text-muted-foreground hover:text-foreground hover:bg-primary/10"
                       }`}
                     onClick={() => setIsSidebarOpen(false)}
                   >

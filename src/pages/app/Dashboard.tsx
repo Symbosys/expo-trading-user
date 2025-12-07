@@ -1,12 +1,12 @@
 import { AppLayout } from "@/components/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  DollarSign, 
-  TrendingUp, 
-  Users, 
-  Wallet, 
-  Copy, 
+import {
+  DollarSign,
+  TrendingUp,
+  Users,
+  Wallet,
+  Copy,
   CheckCircle2,
   ArrowUpRight,
   ArrowDownRight
@@ -14,35 +14,63 @@ import {
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useUser } from "@/api/hooks/useUser";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/api/apiClient";
 
-const balanceData = [
-  { month: "Jan", balance: 10000 },
-  { month: "Feb", balance: 11000 },
-  { month: "Mar", balance: 12100 },
-  { month: "Apr", balance: 13310 },
-  { month: "May", balance: 14641 },
-  { month: "Jun", balance: 16105 },
-];
-
-const referralData = [
-  { month: "Jan", earnings: 250 },
-  { month: "Feb", earnings: 380 },
-  { month: "Mar", earnings: 520 },
-  { month: "Apr", earnings: 650 },
-  { month: "May", earnings: 890 },
-  { month: "Jun", earnings: 1200 },
-];
+const useDashboard = (userId: string) => {
+  return useQuery({
+    queryKey: ["dashboard", userId],
+    queryFn: async () => {
+      const { data } = await api.get(`/user-dashboard/${userId}`);
+      if (!data.success) {
+        throw new Error("Failed to fetch dashboard data");
+      }
+      return data.data;
+    },
+    enabled: !!userId,
+  });
+};
 
 export default function Dashboard() {
   const [copied, setCopied] = useState(false);
-  const referralLink = "https://cryptoinvest.io/ref/JD12345";
+  const { data: user } = useUser();
+  const { data: dashboard, isLoading } = useDashboard(user?.id || "");
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(referralLink);
+    if (!dashboard?.referralLink) return;
+    navigator.clipboard.writeText(dashboard.referralLink);
     setCopied(true);
     toast.success("Referral link copied!");
     setTimeout(() => setCopied(false), 2000);
   };
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="space-y-6">
+          <div className="glass-card p-6 rounded-xl glow">
+            <p className="text-muted-foreground">Loading dashboard...</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!dashboard) {
+    return (
+      <AppLayout>
+        <div className="space-y-6">
+          <div className="glass-card p-6 rounded-xl glow">
+            <p className="text-destructive">Failed to load dashboard data.</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  const hasBalanceGrowth = dashboard.charts.balanceData.some((d: any) => d.balance > 0);
+  const hasReferralEarnings = dashboard.charts.referralData.some((d: any) => d.earnings > 0);
 
   return (
     <AppLayout>
@@ -50,7 +78,7 @@ export default function Dashboard() {
         {/* Welcome Section */}
         <div className="glass-card p-6 rounded-xl glow">
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            Welcome back, <span className="gradient-text">John!</span>
+            Welcome back, <span className="gradient-text">{dashboard.userName}</span>
           </h1>
           <p className="text-muted-foreground">
             Here's your investment overview for today
@@ -68,12 +96,13 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <div className="glass px-4 py-2 rounded-lg flex-1 sm:flex-none">
-                <code className="text-sm text-foreground">{referralLink}</code>
+                <code className="text-sm text-foreground">{dashboard.referralLink}</code>
               </div>
               <Button
                 size="sm"
                 onClick={handleCopyLink}
                 className="bg-primary/20 hover:bg-primary/30"
+                disabled={!dashboard.referralLink}
               >
                 {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </Button>
@@ -95,7 +124,7 @@ export default function Dashboard() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Total Invested</p>
-              <p className="text-2xl font-bold text-foreground">$10,000</p>
+              <p className="text-2xl font-bold text-foreground">${dashboard.kpis.totalInvested}</p>
             </div>
           </Card>
 
@@ -106,12 +135,12 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center gap-1 text-success text-sm">
                 <ArrowUpRight className="w-4 h-4" />
-                <span>+61%</span>
+                <span>{dashboard.summary.roiPercentage}</span>
               </div>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Current Balance</p>
-              <p className="text-2xl font-bold text-foreground">$16,105</p>
+              <p className="text-2xl font-bold text-foreground">${dashboard.kpis.currentBalance}</p>
             </div>
           </Card>
 
@@ -127,7 +156,7 @@ export default function Dashboard() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Monthly ROI</p>
-              <p className="text-2xl font-bold text-foreground">$1,000</p>
+              <p className="text-2xl font-bold text-foreground">${dashboard.kpis.monthlyROI}</p>
             </div>
           </Card>
 
@@ -143,7 +172,7 @@ export default function Dashboard() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Referral Earnings</p>
-              <p className="text-2xl font-bold text-foreground">$1,200</p>
+              <p className="text-2xl font-bold text-foreground">${dashboard.kpis.referralEarnings}</p>
             </div>
           </Card>
         </div>
@@ -153,30 +182,30 @@ export default function Dashboard() {
           {/* Balance Over Time */}
           <Card className="glass-card p-6">
             <h3 className="text-lg font-semibold text-foreground mb-4">
-              Balance Growth
+              Balance Growth{!hasBalanceGrowth && " - No earnings yet"}
             </h3>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={balanceData}>
-                <XAxis 
-                  dataKey="month" 
+              <LineChart data={dashboard.charts.balanceData}>
+                <XAxis
+                  dataKey="month"
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                 />
-                <YAxis 
+                <YAxis
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                 />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
                     borderRadius: "0.5rem",
                   }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="balance" 
-                  stroke="hsl(var(--primary))" 
+                <Line
+                  type="monotone"
+                  dataKey="balance"
+                  stroke="hsl(var(--primary))"
                   strokeWidth={3}
                   dot={{ fill: "hsl(var(--primary))", r: 4 }}
                 />
@@ -187,28 +216,28 @@ export default function Dashboard() {
           {/* Referral Earnings */}
           <Card className="glass-card p-6">
             <h3 className="text-lg font-semibold text-foreground mb-4">
-              Referral Earnings
+              Referral Earnings{!hasReferralEarnings && " - No earnings yet"}
             </h3>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={referralData}>
-                <XAxis 
-                  dataKey="month" 
+              <BarChart data={dashboard.charts.referralData}>
+                <XAxis
+                  dataKey="month"
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                 />
-                <YAxis 
+                <YAxis
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                 />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
                     borderRadius: "0.5rem",
                   }}
                 />
-                <Bar 
-                  dataKey="earnings" 
+                <Bar
+                  dataKey="earnings"
                   fill="hsl(var(--success))"
                   radius={[8, 8, 0, 0]}
                 />
@@ -225,15 +254,15 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="glass p-4 rounded-lg">
               <p className="text-sm text-muted-foreground mb-2">Total Invested</p>
-              <p className="text-2xl font-bold text-foreground">$10,000</p>
+              <p className="text-2xl font-bold text-foreground">${dashboard.summary.totalInvested}</p>
             </div>
             <div className="glass p-4 rounded-lg">
               <p className="text-sm text-muted-foreground mb-2">Profit Earned</p>
-              <p className="text-2xl font-bold text-success">$6,105</p>
+              <p className="text-2xl font-bold text-success">${dashboard.summary.profitEarned}</p>
             </div>
             <div className="glass p-4 rounded-lg">
               <p className="text-sm text-muted-foreground mb-2">ROI Percentage</p>
-              <p className="text-2xl font-bold gradient-text">+61%</p>
+              <p className="text-2xl font-bold gradient-text">{dashboard.summary.roiPercentage}</p>
             </div>
           </div>
         </Card>
@@ -244,29 +273,24 @@ export default function Dashboard() {
             <h3 className="text-lg font-semibold text-foreground">
               Active Subscriptions
             </h3>
-            <span className="text-sm text-muted-foreground">2 active plans</span>
+            <span className="text-sm text-muted-foreground">{dashboard.activeSubscriptions.count} active plans</span>
           </div>
           <div className="space-y-3">
-            <div className="glass p-4 rounded-lg flex items-center justify-between">
-              <div>
-                <p className="font-medium text-foreground">Silver Plan</p>
-                <p className="text-sm text-muted-foreground">6 Months • $5,000 invested</p>
+            {dashboard.activeSubscriptions.plans.map((plan: any, index: number) => (
+              <div key={index} className="glass p-4 rounded-lg flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-foreground">{plan.planName}</p>
+                  <p className="text-sm text-muted-foreground">{plan.duration} • ${plan.amountInvested} invested</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-success">{plan.roiMonthly}</p>
+                  <p className="text-xs text-muted-foreground">{plan.remaining}</p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="font-bold text-success">+10% Monthly</p>
-                <p className="text-xs text-muted-foreground">3 months remaining</p>
-              </div>
-            </div>
-            <div className="glass p-4 rounded-lg flex items-center justify-between">
-              <div>
-                <p className="font-medium text-foreground">Bronze Plan</p>
-                <p className="text-sm text-muted-foreground">3 Months • $5,000 invested</p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-success">+10% Monthly</p>
-                <p className="text-xs text-muted-foreground">1 month remaining</p>
-              </div>
-            </div>
+            ))}
+            {dashboard.activeSubscriptions.plans.length === 0 && (
+              <p className="text-muted-foreground text-center">No active subscriptions</p>
+            )}
           </div>
         </Card>
       </div>

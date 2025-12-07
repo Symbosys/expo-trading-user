@@ -22,6 +22,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/termand condition/privecy";
 import TermsOfService from "./pages/termand condition/term";
+import Notifications from "./pages/app/Notifications";
 
 
 const queryClient = new QueryClient({
@@ -63,8 +64,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* Public routes */}
-          <Route element={<PublicLayout />}>
             <Route path="/" element={<Index />} />
+          <Route element={<PublicLayout />}>
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/signup" element={<Signup />} />
             <Route path="/app/privacy-policy" element={<PrivacyPolicy />} />
@@ -83,7 +84,8 @@ const App = () => (
             <Route path="transactions" element={<Transactions />} />
             <Route path="referrals" element={<Referrals />} />
             <Route path="settings" element={<Settings />} />
-            
+            <Route path="notifications" element={<Notifications />} />
+
           </Route>
 
           {/* Catch-all */}

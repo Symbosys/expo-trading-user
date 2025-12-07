@@ -1,14 +1,14 @@
 import { api } from "@/api/apiClient";
+import { useQrCode } from "@/api/hooks/useQrCode";
 import { useSubscriptionPlans } from "@/api/hooks/useSubscription";
+import { useUser } from "@/api/hooks/useUser";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, TrendingUp } from "lucide-react";
+import { CheckCircle2, Loader2, TrendingUp } from "lucide-react";
 import { useState } from "react";
-
-import { QRCode } from "react-qrcode-logo";
 import { toast } from "sonner";
 
 const planColors = [
@@ -56,15 +56,20 @@ const staticFeatures = [
 ];
 
 export default function Subscriptions() {
-  const { data: plans = [], isLoading, error } = useSubscriptionPlans();
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const { data: user } = useUser();
+  const { data: qrData, isLoading: isQrLoading } = useQrCode();
+  const { data: plans = [], isLoading, error } = useSubscriptionPlans(user?.id);
+
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [transactionId, setTransactionId] = useState("");
+  const [investmentAmount, setInvestmentAmount] = useState(0);
 
-  const handleInvest = (planName: string, plan) => {
+  const handleInvest = (planName: string, plan: any) => {
     setSelectedPlan({ name: planName, ...plan });
     setIsModalOpen(true);
     setTransactionId("");
+    setInvestmentAmount(Number(plan.minimumInvestment));
   };
 
   const handleSubmit = async () => {
@@ -74,9 +79,13 @@ export default function Subscriptions() {
     }
 
     try {
+      if (investmentAmount < Number(selectedPlan.minimumInvestment)) {
+        toast.error(`Investment amount must be at least ${selectedPlan.minimumInvestment} USDT.`);
+        return;
+      }
+
       // Get userId from localStorage (set during login)
-      const userId = localStorage.getItem("userId"); // Make sure this is set during login
-      
+      const userId = localStorage.getItem("userId");
       if (!userId) {
         toast.error("User not found. Please login again.");
         return;
@@ -88,17 +97,17 @@ export default function Subscriptions() {
       // Calculate ROI based on what's available in the plan
       let roiPercentage;
       if (selectedPlan.roiPerMonth) {
-        roiPercentage = Number(selectedPlan.roiPerMonth) * 100; // Convert decimal to percentage
+        roiPercentage = Number(selectedPlan.roiPerMonth) * 100;
       } else if (selectedPlan.roiPerDay) {
-        roiPercentage = Number(selectedPlan.roiPerDay) * 100; // Convert decimal to percentage
+        roiPercentage = Number(selectedPlan.roiPerDay) * 100;
       } else {
         roiPercentage = 0;
       }
 
-      const response = await api.post('/subscription/create', {
+      const response = await api.post('/investment/create', {
         userId,
         planId: selectedPlan.id,
-        amountInvested: Number(selectedPlan.minimumInvestment),
+        amountInvested: investmentAmount,
         roiPercentage,
         startDate,
         endDate,
@@ -109,8 +118,9 @@ export default function Subscriptions() {
         toast.success(`Investment for ${selectedPlan?.name} created successfully! Transaction ID: ${transactionId}`);
         setIsModalOpen(false);
         setTransactionId("");
+        setInvestmentAmount(0);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Investment creation failed:', err);
       toast.error(`Failed to create investment: ${err.response?.data?.error || 'Please try again.'}`);
     }
@@ -144,9 +154,6 @@ export default function Subscriptions() {
     );
   }
 
-  const walletAddress = "0x742d35Cc6b0eA849c6cD3aD5a793cF9C8b6f2d5e";
-  const qrValue = `USDT:${walletAddress}?amount=${selectedPlan?.minimumInvestment || 100}`;
-
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -165,7 +172,8 @@ export default function Subscriptions() {
             const color = planColors[index % planColors.length];
             const features = staticFeatures[index % staticFeatures.length];
             const term = `${plan.durationInMonths} Months`;
-            
+            const isSubscribed = plan.isSubscribed || false;
+
             // Display ROI based on what's available
             let roiDisplay;
             if (plan.roiPerMonth) {
@@ -175,20 +183,26 @@ export default function Subscriptions() {
             } else {
               roiDisplay = "Contact for ROI";
             }
-            
+
             const min = Number(plan.minimumInvestment).toLocaleString();
 
             return (
               <Card
                 key={plan.id}
-                className={`glass-card p-6 relative transition-all hover:scale-[1.02] ${
-                  isPopular ? "border-primary glow" : ""
-                }`}
+                className={`glass-card p-6 relative transition-all hover:scale-[1.02] ${isPopular ? "border-primary glow" : ""
+                  }`}
               >
                 {isPopular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                     <span className="bg-gradient-primary px-4 py-1 rounded-full text-sm font-medium text-foreground glow">
                       Most Popular
+                    </span>
+                  </div>
+                )}
+                {isSubscribed && (
+                  <div className="absolute -top-4 right-4">
+                    <span className="bg-success/20 text-success px-3 py-1 rounded-full text-xs font-medium">
+                      Subscribed
                     </span>
                   </div>
                 )}
@@ -203,7 +217,6 @@ export default function Subscriptions() {
                       <p className="text-sm text-muted-foreground">{term} Term</p>
                     </div>
                   </div>
-
                   <div className="glass p-4 rounded-lg">
                     <div className="text-center">
                       <div className="text-3xl font-bold gradient-text mb-1">
@@ -222,7 +235,7 @@ export default function Subscriptions() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground mb-1">Max Investment</p>
-                      <p className="text-lg font-bold text-foreground">Unlimited</p>
+                      <p className="text-lg font-bold text-foreground">${plan?.maximumInvestment || "Unlimited"}</p>
                     </div>
                   </div>
                 </div>
@@ -237,14 +250,16 @@ export default function Subscriptions() {
                 </div>
 
                 <Button
-                  className={`w-full ${
-                    isPopular
+                  className={`w-full ${isSubscribed
+                    ? "bg-success/50 cursor-not-allowed"
+                    : isPopular
                       ? "bg-gradient-primary glow"
                       : "bg-primary/20 hover:bg-primary/30"
-                  }`}
-                  onClick={() => handleInvest(plan.name, plan)}
+                    }`}
+                  onClick={() => !isSubscribed && handleInvest(plan.name, plan)}
+                  disabled={isSubscribed}
                 >
-                  Invest Now
+                  {isSubscribed ? "Subscribed" : "Invest Now"}
                 </Button>
               </Card>
             );
@@ -265,7 +280,6 @@ export default function Subscriptions() {
                 Select an investment plan that matches your budget and investment duration.
               </p>
             </div>
-
             <div className="glass p-4 rounded-lg">
               <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center glow mb-3">
                 <span className="text-lg font-bold text-foreground">2</span>
@@ -275,7 +289,6 @@ export default function Subscriptions() {
                 Deposit USDT to start your investment. Your returns begin accumulating immediately.
               </p>
             </div>
-
             <div className="glass p-4 rounded-lg">
               <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center glow mb-3">
                 <span className="text-lg font-bold text-foreground">3</span>
@@ -295,19 +308,58 @@ export default function Subscriptions() {
                 Invest in {selectedPlan?.name}
               </DialogTitle>
             </DialogHeader>
+
             <div className="p-6 space-y-4">
               <div className="text-center space-y-2">
                 <p className="text-sm text-muted-foreground">Send USDT to:</p>
-                <div className="bg-black/20 p-2 rounded-lg inline-block">
-                  <code className="text-xs font-mono break-all text-foreground">{walletAddress}</code>
+                <div className="bg-black/20 p-2 rounded-lg inline-block w-full">
+                  {isQrLoading ? (
+                    <div className="h-4 w-3/4 mx-auto bg-gray-700/50 animate-pulse rounded"></div>
+                  ) : (
+                    <code className="text-xs font-mono break-all text-foreground">
+                      {/* Note: Interface has typo 'wallentaddress', using exactly as specified */}
+                      {qrData?.wallentaddress || "Address not available"}
+                    </code>
+                  )}
                 </div>
               </div>
-              <div className="flex justify-center">
-                <QRCode value={qrValue} size={200} />
+
+              <div className="flex justify-center items-center min-h-[200px]">
+                {isQrLoading ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    <span className="text-sm text-muted-foreground">Loading QR...</span>
+                  </div>
+                ) : qrData?.qrCodeUrl?.secure_url ? (
+                  <img
+                    src={qrData.qrCodeUrl.secure_url}
+                    alt="Payment QR Code"
+                    className="w-[200px] h-[200px] object-contain rounded-lg bg-white"
+                  />
+                ) : (
+                  <div className="w-[200px] h-[200px] bg-gray-800 rounded-lg flex items-center justify-center text-muted-foreground text-sm">
+                    QR Code Unavailable
+                  </div>
+                )}
               </div>
+
               <div>
                 <label className="text-sm font-medium text-foreground mb-2 block">
-                  Enter Transaction ID
+                  Investment Amount (USDT)
+                </label>
+                <Input
+                  type="number"
+                  value={investmentAmount}
+                  onChange={(e) => setInvestmentAmount(Number(e.target.value))}
+                  placeholder={`${selectedPlan?.minimumInvestment} or more`}
+                  className="w-full"
+                  min={selectedPlan?.minimumInvestment}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Enter Order Id
                 </label>
                 <Input
                   value={transactionId}
@@ -316,6 +368,7 @@ export default function Subscriptions() {
                   className="w-full"
                 />
               </div>
+
               <Button onClick={handleSubmit} className="w-full bg-gradient-primary glow">
                 Submit
               </Button>
