@@ -186,7 +186,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
               <span className="font-bold gradient-text">CryptoInvest</span>
             </div>
-            <div className="w-6" /> {/* Spacer for center alignment */}
+            <Link to="/app/notifications" className="text-foreground">
+              <Bell className="w-6 h-6" />
+            </Link>
           </div>
         </header>
 
