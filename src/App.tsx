@@ -56,43 +56,47 @@ const PublicLayout = () => {
   return <Outlet />;
 };
 
+import { ThemeProvider } from "@/components/theme-provider";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Public routes */}
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Public routes */}
             <Route path="/" element={<Index />} />
-          <Route element={<PublicLayout />}>
-            <Route path="/auth/login" element={<Login />} />
-            <Route path="/auth/signup" element={<Signup />} />
-            <Route path="/app/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/app/terms-of-service" element={<TermsOfService />} />
-          </Route>
+            <Route element={<PublicLayout />}>
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/signup" element={<Signup />} />
+              <Route path="/app/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/app/terms-of-service" element={<TermsOfService />} />
+            </Route>
 
-          {/* Protected routes */}
-          <Route path="/app" element={<ProtectedLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="wallet" element={<Wallet />} />
-            <Route path="subscriptions" element={<Subscriptions />} />
-            <Route path="redeem" element={<Redeem />} />
-            <Route path="withdraw" element={<Withdraw />} />
-            <Route path="transfer" element={<Transfer />} />
-            <Route path="transactions" element={<Transactions />} />
-            <Route path="referrals" element={<Referrals />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="notifications" element={<Notifications />} />
+            {/* Protected routes */}
+            <Route path="/app" element={<ProtectedLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="wallet" element={<Wallet />} />
+              <Route path="subscriptions" element={<Subscriptions />} />
+              <Route path="redeem" element={<Redeem />} />
+              <Route path="withdraw" element={<Withdraw />} />
+              <Route path="transfer" element={<Transfer />} />
+              <Route path="transactions" element={<Transactions />} />
+              <Route path="referrals" element={<Referrals />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="notifications" element={<Notifications />} />
 
-          </Route>
+            </Route>
 
-          {/* Catch-all */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+            {/* Catch-all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

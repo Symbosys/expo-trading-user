@@ -21,6 +21,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/api/hooks/useUser";
 import { getAuth } from "@/hooks/auth";
+import { ModeToggle } from "./mode-toggle";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -127,6 +128,11 @@ export function AppLayout({ children }: AppLayoutProps) {
 
           {/* User Info */}
           <div className="p-4 border-t border-primary/20">
+            <div className="flex items-center justify-between mb-4 px-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase">Theme</span>
+              <ModeToggle />
+            </div>
+
             {showLoading ? (
               <div className="flex items-center justify-center p-3">
                 <div className="w-10 h-10 rounded-full bg-muted animate-pulse" />
@@ -186,9 +192,13 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
               <span className="font-bold gradient-text">CryptoInvest</span>
             </div>
-            <Link to="/app/notifications" className="text-foreground">
-              <Bell className="w-6 h-6" />
-            </Link>
+
+            <div className="flex items-center gap-3">
+              <ModeToggle />
+              <Link to="/app/notifications" className="text-foreground">
+                <Bell className="w-6 h-6" />
+              </Link>
+            </div>
           </div>
         </header>
 

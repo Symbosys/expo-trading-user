@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Menu } from "lucide-react";
 import { useState } from "react";
+import { ModeToggle } from "./mode-toggle";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,6 +30,7 @@ export function Navbar() {
             <Link to="/#contact" className="text-foreground/80 hover:text-primary transition-colors">
               Contact
             </Link>
+            <ModeToggle />
             <Link to="/auth/login">
               <Button variant="outline" className="border-primary/30 hover:bg-primary/10">
                 Login
@@ -40,33 +42,36 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-foreground"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <Menu className="w-6 h-6" />
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <ModeToggle />
+            <button
+              className="text-foreground"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-3">
-            <Link 
-              to="/#about" 
+            <Link
+              to="/#about"
               className="block text-foreground/80 hover:text-primary transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               About
             </Link>
-            <Link 
-              to="/#plans" 
+            <Link
+              to="/#plans"
               className="block text-foreground/80 hover:text-primary transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Plans
             </Link>
-            <Link 
-              to="/#contact" 
+            <Link
+              to="/#contact"
               className="block text-foreground/80 hover:text-primary transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >

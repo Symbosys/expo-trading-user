@@ -95,13 +95,13 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <div className="glass px-4 py-2 rounded-lg flex-1 sm:flex-none">
-                <code className="text-sm text-foreground">{dashboard.referralLink}</code>
+              <div className="glass px-4 py-2 rounded-lg flex-1 sm:flex-none min-w-0">
+                <code className="text-sm text-foreground truncate block">{dashboard.referralLink}</code>
               </div>
               <Button
                 size="sm"
                 onClick={handleCopyLink}
-                className="bg-primary/20 hover:bg-primary/30"
+                className="bg-primary/20 hover:bg-primary/30 shrink-0"
                 disabled={!dashboard.referralLink}
               >
                 {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
