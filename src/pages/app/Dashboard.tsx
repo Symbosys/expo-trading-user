@@ -62,7 +62,7 @@ export default function Dashboard() {
       <AppLayout>
         <div className="space-y-6">
           <div className="glass-card p-6 rounded-xl glow">
-            <p className="text-destructive">Failed to load dashboard data.</p>
+            <p className="text-muted-foreground">Loading dashboard...</p>
           </div>
         </div>
       </AppLayout>
@@ -111,7 +111,7 @@ export default function Dashboard() {
         </Card>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <Card className="glass-card p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center glow">
@@ -141,6 +141,22 @@ export default function Dashboard() {
             <div>
               <p className="text-sm text-muted-foreground mb-1">Current Balance</p>
               <p className="text-2xl font-bold text-foreground">${dashboard.kpis.currentBalance}</p>
+            </div>
+          </Card>
+
+          <Card className="glass-card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center glow">
+                <TrendingUp className="w-6 h-6 text-secondary" />
+              </div>
+              <div className="flex items-center gap-1 text-success text-sm">
+                <ArrowUpRight className="w-4 h-4" />
+                <span>+10%</span>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Daily ROI</p>
+              <p className="text-2xl font-bold text-foreground">${dashboard.kpis.dailyROI}</p>
             </div>
           </Card>
 
