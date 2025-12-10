@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState } from "react";
 import { ModeToggle } from "./mode-toggle";
+import logo1 from "@/assets/logo/logo1.jpeg";
+import logo2 from "@/assets/logo/logo2.jpeg";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,10 +15,8 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center glow">
-              <TrendingUp className="w-6 h-6 text-foreground" />
-            </div>
-            <span className="text-xl font-bold gradient-text hidden sm:inline">CryptoInvest</span>
+            <img src={logo1} alt="CryptoInvest" className="h-10 w-auto block dark:hidden rounded-md" />
+            <img src={logo2} alt="CryptoInvest" className="h-10 w-auto hidden dark:block rounded-md" />
           </Link>
 
           {/* Desktop Navigation */}
