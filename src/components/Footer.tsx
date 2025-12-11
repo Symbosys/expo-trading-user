@@ -1,5 +1,6 @@
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, TrendingUp, Twitter } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
+import logo from "@/assets/logo/logo.jpeg";
 
 export function Footer() {
   return (
@@ -9,10 +10,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center glow">
-                <TrendingUp className="w-6 h-6 text-foreground" />
-              </div>
-              <span className="text-xl font-bold gradient-text">CryptoInvest</span>
+              <img src={logo} alt="CryptoInvest" className="h-10 w-auto rounded-md" />
             </div>
             <p className="text-muted-foreground text-sm">
               Your trusted platform for USDT investments with guaranteed 10% monthly returns.
@@ -36,7 +34,7 @@ export function Footer() {
                 Dashboard
               </Link>
               <Link to="/app/privacy-policy" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
-               Privacy Policy
+                Privacy Policy
               </Link>
               <Link to="/app/terms-of-service" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
                 Terms of Service
@@ -67,26 +65,26 @@ export function Footer() {
           <div>
             <h3 className="font-semibold text-foreground mb-4">Follow Us</h3>
             <div className="flex gap-3">
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-primary/20 transition-all hover:glow"
               >
                 <Facebook className="w-5 h-5 text-primary" />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-primary/20 transition-all hover:glow"
               >
                 <Twitter className="w-5 h-5 text-primary" />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-primary/20 transition-all hover:glow"
               >
                 <Linkedin className="w-5 h-5 text-primary" />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-primary/20 transition-all hover:glow"
               >
                 <Instagram className="w-5 h-5 text-primary" />

@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { ModeToggle } from "./mode-toggle";
-import logo1 from "@/assets/logo/logo1.jpeg";
-import logo2 from "@/assets/logo/logo2.jpeg";
+import logo from "@/assets/logo/logo.jpeg";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,8 +14,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <img src={logo1} alt="CryptoInvest" className="h-10 w-auto block dark:hidden rounded-md" />
-            <img src={logo2} alt="CryptoInvest" className="h-10 w-auto hidden dark:block rounded-md" />
+            <img src={logo} alt="CryptoInvest" className="h-10 w-auto rounded-md" />
           </Link>
 
           {/* Desktop Navigation */}

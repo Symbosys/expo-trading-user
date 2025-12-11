@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { TrendingUp, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/api/apiClient";
 import { ErrorMessage } from "@/utils/utils";
+import logo from "@/assets/logo/logo.jpeg";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -50,10 +51,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-12 h-12 rounded-lg bg-gradient-primary flex items-center justify-center glow">
-            <TrendingUp className="w-7 h-7 text-foreground" />
-          </div>
-          <span className="text-2xl font-bold gradient-text">CryptoInvest</span>
+          <img src={logo} alt="CryptoInvest" className="h-16 w-auto rounded-md" />
         </Link>
 
         <Card className="glass-card p-8">

@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Lock, Mail, Share2, TrendingUp, User, Wallet } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, Share2, User, Wallet } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import logo from "@/assets/logo/logo.jpeg";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -81,10 +82,7 @@ export default function Signup() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-12 h-12 rounded-lg bg-gradient-primary flex items-center justify-center glow">
-            <TrendingUp className="w-7 h-7 text-foreground" />
-          </div>
-          <span className="text-2xl font-bold gradient-text">CryptoInvest</span>
+          <img src={logo} alt="CryptoInvest" className="h-16 w-auto rounded-md" />
         </Link>
 
         <Card className="glass-card p-8">

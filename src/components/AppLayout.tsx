@@ -21,8 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/api/hooks/useUser";
 import { getAuth } from "@/hooks/auth";
 import { ModeToggle } from "./mode-toggle";
-import logo1 from "@/assets/logo/logo1.jpeg";
-import logo2 from "@/assets/logo/logo2.jpeg";
+import logo from "@/assets/logo/logo.jpeg";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -90,8 +89,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           {/* Logo */}
           <div className="flex items-center justify-between p-6 border-b border-primary/20">
             <Link to="/app/dashboard" className="flex items-center gap-2">
-              <img src={logo1} alt="CryptoInvest" className="h-10 w-auto block dark:hidden rounded-md" />
-              <img src={logo2} alt="CryptoInvest" className="h-10 w-auto hidden dark:block rounded-md" />
+              <img src={logo} alt="CryptoInvest" className="h-10 w-auto rounded-md" />
             </Link>
             <button
               className="lg:hidden text-foreground"
@@ -186,8 +184,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               <Menu className="w-6 h-6" />
             </button>
             <div className="flex items-center gap-2">
-              <img src={logo1} alt="CryptoInvest" className="h-8 w-auto block dark:hidden rounded-md" />
-              <img src={logo2} alt="CryptoInvest" className="h-8 w-auto hidden dark:block rounded-md" />
+              <img src={logo} alt="CryptoInvest" className="h-8 w-auto rounded-md" />
             </div>
 
             <div className="flex items-center gap-3">
