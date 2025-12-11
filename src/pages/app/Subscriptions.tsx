@@ -21,14 +21,14 @@ const planColors = [
 
 const staticFeatures = [
   [
-    "Guaranteed ROI Monthly",
+    "Guaranteed ROI Daily",
     "Flexible withdrawal options",
     "24/7 Customer support",
     "Referral bonus eligibility",
     "Investment tracking dashboard"
   ],
   [
-    "Guaranteed ROI Monthly",
+    "Guaranteed ROI Daily",
     "Priority customer support",
     "Bonus reward programs",
     "VIP referral bonuses",
@@ -36,7 +36,7 @@ const staticFeatures = [
     "Early access to new features"
   ],
   [
-    "Guaranteed ROI Monthly",
+    "Guaranteed ROI Daily",
     "Dedicated account manager",
     "Exclusive investment perks",
     "Premium reward programs",
@@ -45,7 +45,7 @@ const staticFeatures = [
     "Personalized investment advice"
   ],
   [
-    "Guaranteed ROI Monthly",
+    "Guaranteed ROI Daily",
     "Executive account manager",
     "White-glove concierge service",
     "Maximum referral rewards",
