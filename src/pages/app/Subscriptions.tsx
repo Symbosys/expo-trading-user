@@ -63,14 +63,30 @@ export default function Subscriptions() {
 
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalStep, setModalStep] = useState(1); // 1 = Amount, 2 = Payment/QR
   const [transactionId, setTransactionId] = useState("");
   const [investmentAmount, setInvestmentAmount] = useState(0);
 
   const handleInvest = (planName: string, plan: any) => {
     setSelectedPlan({ name: planName, ...plan });
     setIsModalOpen(true);
+    setModalStep(1); // Reset to step 1
     setTransactionId("");
     setInvestmentAmount(Number(plan.minimumInvestment));
+  };
+
+  const handleProceedToPayment = () => {
+    if (investmentAmount < Number(selectedPlan.minimumInvestment)) {
+      toast.error(`Investment amount must be at least ${selectedPlan.minimumInvestment} USDT.`);
+      return;
+    }
+
+    if (selectedPlan.maximumInvestment && investmentAmount > Number(selectedPlan.maximumInvestment)) {
+      toast.error(`Investment amount cannot exceed ${selectedPlan.maximumInvestment} USDT.`);
+      return;
+    }
+
+    setModalStep(2);
   };
 
   const handleSubmit = async () => {
@@ -314,83 +330,112 @@ export default function Subscriptions() {
           <DialogContent className="glass-card max-w-sm p-0">
             <DialogHeader className="p-6 border-b">
               <DialogTitle className="text-2xl font-bold text-foreground">
-                Invest in {selectedPlan?.name}
+                {modalStep === 1 ? `Invest in ${selectedPlan?.name}` : "Complete Payment"}
               </DialogTitle>
             </DialogHeader>
 
             <div className="p-6 space-y-4">
-              <div className="text-center space-y-2">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <span className="text-sm font-medium text-foreground">Send USDT to:</span>
-                  <span className="text-amber-500 font-bold text-[10px] uppercase bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">BEP-20 Network Only</span>
-                </div>
-                <div className="bg-black/40 p-3 rounded-lg inline-block w-full border border-amber-500/30">
-                  {isQrLoading ? (
-                    <div className="h-4 w-3/4 mx-auto bg-gray-700/50 animate-pulse rounded"></div>
-                  ) : (
-                    <code className="text-xs font-mono break-all text-foreground selection:bg-primary/30">
-                      {/* Note: Interface has typo 'wallentaddress', using exactly as specified */}
-                      {qrData?.wallentaddress || "Address not available"}
-                    </code>
-                  )}
-                </div>
-              </div>
-              <p className="text-xs font-bold text-amber-500 text-center bg-amber-500/5 py-1 rounded">
-                WARNING: Send only BEP-20 (Binance Smart Chain) USDT.
-              </p>
-
-              <div className="flex justify-center items-center min-h-[200px]">
-                {isQrLoading ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                    <span className="text-sm text-muted-foreground">Loading QR...</span>
+              {modalStep === 1 ? (
+                // Step 1: Investment Amount
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">
+                      Investment Amount (USDT)
+                    </label>
+                    <Input
+                      type="number"
+                      value={investmentAmount}
+                      onChange={(e) => setInvestmentAmount(Number(e.target.value))}
+                      placeholder={`${selectedPlan?.minimumInvestment} or more`}
+                      className="w-full text-lg"
+                      min={selectedPlan?.minimumInvestment}
+                      autoFocus
+                    />
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Minimum investment: <strong>${selectedPlan?.minimumInvestment}</strong>
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Maximum investment: <strong>${selectedPlan?.maximumInvestment || "Unlimited"}</strong>
+                    </p>
                   </div>
-                ) : qrData?.qrCodeUrl?.secure_url ? (
-                  <img
-                    src={qrData.qrCodeUrl.secure_url}
-                    alt="Payment QR Code"
-                    className="w-[200px] h-[200px] object-contain rounded-lg bg-white"
-                  />
-                ) : (
-                  <div className="w-[200px] h-[200px] bg-gray-800 rounded-lg flex items-center justify-center text-muted-foreground text-sm">
-                    QR Code Unavailable
+
+                  <Button onClick={handleProceedToPayment} className="w-full bg-gradient-primary glow mt-4">
+                    Continue to Payment
+                  </Button>
+                </div>
+              ) : (
+                // Step 2: QR Code & Payment
+                <div className="space-y-4">
+                  <div className="text-center space-y-2">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <span className="text-sm font-medium text-foreground">Send USDT to:</span>
+                      <span className="text-amber-500 font-bold text-[10px] uppercase bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">BEP-20 Network Only</span>
+                    </div>
+                    <div className="bg-black/40 p-3 rounded-lg inline-block w-full border border-amber-500/30">
+                      {isQrLoading ? (
+                        <div className="h-4 w-3/4 mx-auto bg-gray-700/50 animate-pulse rounded"></div>
+                      ) : (
+                        <code className="text-xs font-mono break-all text-foreground selection:bg-primary/30">
+                          {/* Note: Interface has typo 'wallentaddress', using exactly as specified */}
+                          {qrData?.wallentaddress || "Address not available"}
+                        </code>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
+                  <p className="text-xs font-bold text-amber-500 text-center bg-amber-500/5 py-1 rounded">
+                    WARNING: Send only BEP-20 (Binance Smart Chain) USDT.
+                  </p>
 
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  Investment Amount (USDT)
-                </label>
-                <Input
-                  type="number"
-                  value={investmentAmount}
-                  onChange={(e) => setInvestmentAmount(Number(e.target.value))}
-                  placeholder={`${selectedPlan?.minimumInvestment} or more`}
-                  className="w-full"
-                  min={selectedPlan?.minimumInvestment}
-                />
-              </div>
+                  <div className="flex justify-center items-center min-h-[200px]">
+                    {isQrLoading ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                        <span className="text-sm text-muted-foreground">Loading QR...</span>
+                      </div>
+                    ) : qrData?.qrCodeUrl?.secure_url ? (
+                      <img
+                        src={qrData.qrCodeUrl.secure_url}
+                        alt="Payment QR Code"
+                        className="w-[200px] h-[200px] object-contain rounded-lg bg-white"
+                      />
+                    ) : (
+                      <div className="w-[200px] h-[200px] bg-gray-800 rounded-lg flex items-center justify-center text-muted-foreground text-sm">
+                        QR Code Unavailable
+                      </div>
+                    )}
+                  </div>
 
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                  Transaction Hash (Order ID)
-                  <span className="text-xs text-muted-foreground font-normal">(Required)</span>
-                </label>
-                <Input
-                  value={transactionId}
-                  onChange={(e) => setTransactionId(e.target.value)}
-                  placeholder="Paste your BEP-20 Transaction Hash here..."
-                  className="w-full glass border-amber-500/30 focus-visible:ring-amber-500/30 placeholder:text-amber-500/50"
-                />
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  Enter the transaction ID provided by your wallet after sending funds.
-                </p>
-              </div>
+                  <div className="bg-secondary/10 p-3 rounded-lg flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Amount to Pay:</span>
+                    <span className="font-bold text-lg text-foreground">${investmentAmount} USDT</span>
+                  </div>
 
-              <Button onClick={handleSubmit} className="w-full bg-gradient-primary glow">
-                Submit
-              </Button>
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                      Transaction Hash (Order ID)
+                      <span className="text-xs text-muted-foreground font-normal">(Required)</span>
+                    </label>
+                    <Input
+                      value={transactionId}
+                      onChange={(e) => setTransactionId(e.target.value)}
+                      placeholder="Paste your BEP-20 Transaction Hash here..."
+                      className="w-full glass border-amber-500/30 focus-visible:ring-amber-500/30 placeholder:text-amber-500/50"
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Enter the transaction ID provided by your wallet after sending funds.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button variant="outline" onClick={() => setModalStep(1)} className="flex-1">
+                      Back
+                    </Button>
+                    <Button onClick={handleSubmit} className="flex-[2] bg-gradient-primary glow">
+                      Submit Investment
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>
