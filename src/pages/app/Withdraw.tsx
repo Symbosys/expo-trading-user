@@ -3,8 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowUpFromLine, AlertCircle, CheckCircle2, Wallet } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ArrowUpFromLine, AlertCircle, CheckCircle2, Wallet, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useUserWithdrawals, useCreateWithdrawal } from "@/api/hooks/useWithdrawals";
@@ -87,6 +87,15 @@ export default function Withdraw() {
           </p>
         </div>
 
+        <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-600 dark:text-yellow-500">
+          <AlertTriangle className="h-4 w-4 stroke-yellow-600 dark:stroke-yellow-500" />
+          <AlertTitle>Important Network Warning</AlertTitle>
+          <AlertDescription className="font-medium">
+            Please ensure you use ONLY <strong>BEP-20 (Binance Smart Chain)</strong> network wallet address.
+            Using other networks may result in permanent loss of funds.
+          </AlertDescription>
+        </Alert>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Withdraw Form */}
           <div className="lg:col-span-2">
@@ -135,18 +144,20 @@ export default function Withdraw() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address">Withdrawal Address</Label>
+                  <Label htmlFor="address" className="flex items-center gap-2">
+                    Withdrawal Address <span className="text-amber-500 font-bold text-xs uppercase bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">BEP-20 Network Only</span>
+                  </Label>
                   <Input
                     id="address"
                     type="text"
-                    placeholder="Enter your wallet address"
-                    className="glass"
+                    placeholder="Enter destination BEP-20 Wallet Address"
+                    className="glass border-amber-500/30 focus-visible:ring-amber-500/30 placeholder:text-amber-500/50"
                     value={destinationAddress}
                     onChange={(e) => setDestinationAddress(e.target.value)}
                     disabled={createMutation.isPending}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Enter USDT (TRC-20) wallet address
+                  <p className="text-xs font-medium text-amber-500/80">
+                    IMPORTANT: Only send to BEP-20 network addresses to avoid loss of funds.
                   </p>
                 </div>
 
@@ -239,7 +250,7 @@ export default function Withdraw() {
             <div className="space-y-3 text-sm text-muted-foreground">
               <p className="flex items-start gap-2">
                 <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                Only USDT (TRC-20) withdrawals supported
+                Only USDT (BEP-20) withdrawals supported
               </p>
               <p className="flex items-start gap-2">
                 <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />

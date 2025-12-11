@@ -1,10 +1,11 @@
 import { AppLayout } from "@/components/AppLayout";
 import { Card } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Receipt, Search, Filter, Download } from "lucide-react";
+import { Receipt, Search, Filter, Download, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { useUserTransactions } from "@/api/hooks/useTransactions";
 import { AxiosError } from "axios";
@@ -104,6 +105,14 @@ export default function Transactions() {
             View all your transaction history and download statements
           </p>
         </div>
+
+        <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-600 dark:text-yellow-500">
+          <AlertTriangle className="h-4 w-4 stroke-yellow-600 dark:stroke-yellow-500" />
+          <AlertTitle>Important Network Warning</AlertTitle>
+          <AlertDescription className="font-medium">
+            Please ensure you use ONLY <strong>BEP-20 (Binance Smart Chain)</strong> network wallet addresses for all cryptocurrency transactions.
+          </AlertDescription>
+        </Alert>
 
         {/* Filters */}
         <Card className="glass-card p-6">

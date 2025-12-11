@@ -3,8 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowRightLeft, AlertCircle, CheckCircle2, Wallet, User } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ArrowRightLeft, AlertCircle, CheckCircle2, Wallet, User, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useUserTransfers, useCreateTransfer } from "@/api/hooks/useTransfers";
@@ -93,6 +93,14 @@ export default function Transfer() {
             Send USDT to another CryptoInvest user instantly
           </p>
         </div>
+
+        <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-600 dark:text-yellow-500">
+          <AlertTriangle className="h-4 w-4 stroke-yellow-600 dark:stroke-yellow-500" />
+          <AlertTitle>Important Network Warning</AlertTitle>
+          <AlertDescription className="font-medium">
+            Please ensure you use ONLY <strong>BEP-20 (Binance Smart Chain)</strong> network wallet addresses for all cryptocurrency transactions.
+          </AlertDescription>
+        </Alert>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Transfer Form */}

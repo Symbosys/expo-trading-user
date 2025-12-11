@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Wallet as WalletIcon, Copy, CheckCircle2, Download } from "lucide-react";
+import { Wallet as WalletIcon, Copy, CheckCircle2, Download, AlertTriangle } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import { useWallet } from "@/api/hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import { getAuth } from "@/hooks/auth";
 import { AxiosError } from "axios";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function Wallet() {
   const navigate = useNavigate();
@@ -115,6 +116,15 @@ export default function Wallet() {
           </p>
         </div>
 
+        <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-600 dark:text-yellow-500">
+          <AlertTriangle className="h-4 w-4 stroke-yellow-600 dark:stroke-yellow-500" />
+          <AlertTitle>Important Network Warning</AlertTitle>
+          <AlertDescription className="font-medium">
+            Please ensure you add ONLY <strong>BEP-20 (Binance Smart Chain)</strong> network wallet address.
+            Using other networks (like TRC-20) may result in permanent loss of funds.
+          </AlertDescription>
+        </Alert>
+
         {wallet ? (
           <>
             {/* Wallet Overview */}
@@ -128,7 +138,7 @@ export default function Wallet() {
                   <div>
                     <h3 className="text-lg font-semibold text-foreground">Wallet Address</h3>
                     <p className="text-sm text-muted-foreground">
-                      {wallet.currency} ({wallet.currency === "USDT" ? "TRC-20" : "Network"})
+                      {wallet.currency} ({wallet.currency === "USDT" ? "BEP-20" : "Network"})
                     </p>
                   </div>
                 </div>
@@ -273,17 +283,19 @@ export default function Wallet() {
 
             <div className="space-y-4">
               <div>
-                <Label htmlFor="walletAddress">Wallet Address</Label>
+                <Label htmlFor="walletAddress" className="flex items-center gap-2">
+                  Wallet Address <span className="text-amber-500 font-bold text-xs uppercase bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">BEP-20 Network Only</span>
+                </Label>
                 <Input
                   id="walletAddress"
                   type="text"
-                  placeholder="0x1234567890abcdef..."
+                  placeholder="Enter your BEP-20 Wallet Address (0x...)"
                   value={walletAddressInput}
                   onChange={(e) => setWalletAddressInput(e.target.value)}
-                  className="glass"
+                  className="glass border-amber-500/30 focus-visible:ring-amber-500/30 placeholder:text-amber-500/50"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Enter your USDT (TRC-20) wallet address.
+                <p className="text-xs font-medium text-amber-500/80 mt-1">
+                  IMPORTANT: Please ensure you enter a valid BEP-20 address.
                 </p>
               </div>
 

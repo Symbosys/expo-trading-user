@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, Loader2, TrendingUp } from "lucide-react";
+import { CheckCircle2, Loader2, TrendingUp, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -166,6 +167,14 @@ export default function Subscriptions() {
           </p>
         </div>
 
+        <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-600 dark:text-yellow-500">
+          <AlertTriangle className="h-4 w-4 stroke-yellow-600 dark:stroke-yellow-500" />
+          <AlertTitle>Important Network Warning</AlertTitle>
+          <AlertDescription className="font-medium">
+            Please ensure you use ONLY <strong>BEP-20 (Binance Smart Chain)</strong> network wallet addresses for all cryptocurrency transactions.
+          </AlertDescription>
+        </Alert>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {plans.map((plan, index) => {
             const isPopular = index === 1;
@@ -311,18 +320,24 @@ export default function Subscriptions() {
 
             <div className="p-6 space-y-4">
               <div className="text-center space-y-2">
-                <p className="text-sm text-muted-foreground">Send USDT to:</p>
-                <div className="bg-black/20 p-2 rounded-lg inline-block w-full">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <span className="text-sm font-medium text-foreground">Send USDT to:</span>
+                  <span className="text-amber-500 font-bold text-[10px] uppercase bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">BEP-20 Network Only</span>
+                </div>
+                <div className="bg-black/40 p-3 rounded-lg inline-block w-full border border-amber-500/30">
                   {isQrLoading ? (
                     <div className="h-4 w-3/4 mx-auto bg-gray-700/50 animate-pulse rounded"></div>
                   ) : (
-                    <code className="text-xs font-mono break-all text-foreground">
+                    <code className="text-xs font-mono break-all text-foreground selection:bg-primary/30">
                       {/* Note: Interface has typo 'wallentaddress', using exactly as specified */}
                       {qrData?.wallentaddress || "Address not available"}
                     </code>
                   )}
                 </div>
               </div>
+              <p className="text-xs font-bold text-amber-500 text-center bg-amber-500/5 py-1 rounded">
+                WARNING: Send only BEP-20 (Binance Smart Chain) USDT.
+              </p>
 
               <div className="flex justify-center items-center min-h-[200px]">
                 {isQrLoading ? (
@@ -358,15 +373,19 @@ export default function Subscriptions() {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  Enter Order Id
+                <label className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                  Transaction Hash (Order ID)
+                  <span className="text-xs text-muted-foreground font-normal">(Required)</span>
                 </label>
                 <Input
                   value={transactionId}
                   onChange={(e) => setTransactionId(e.target.value)}
-                  placeholder="e.g., 0x123..."
-                  className="w-full"
+                  placeholder="Paste your BEP-20 Transaction Hash here..."
+                  className="w-full glass border-amber-500/30 focus-visible:ring-amber-500/30 placeholder:text-amber-500/50"
                 />
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  Enter the transaction ID provided by your wallet after sending funds.
+                </p>
               </div>
 
               <Button onClick={handleSubmit} className="w-full bg-gradient-primary glow">
@@ -376,6 +395,6 @@ export default function Subscriptions() {
           </DialogContent>
         </Dialog>
       </div>
-    </AppLayout>
+    </AppLayout >
   );
 }
