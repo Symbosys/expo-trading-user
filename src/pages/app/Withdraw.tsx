@@ -83,7 +83,7 @@ export default function Withdraw() {
             <span className="gradient-text">Withdraw</span> Funds
           </h1>
           <p className="text-muted-foreground">
-            Transfer funds from your wallet to your bank or crypto wallet
+            Transfer funds from your wallet to your given wallet address or crypto wallet
           </p>
         </div>
 
@@ -93,6 +93,14 @@ export default function Withdraw() {
           <AlertDescription className="font-medium">
             Please ensure you use ONLY <strong>BEP-20 (Binance Smart Chain)</strong> network wallet address.
             Using other networks may result in permanent loss of funds.
+          </AlertDescription>
+        </Alert>
+
+        <Alert className="border-orange-500/50 bg-orange-500/10 text-orange-600 dark:text-orange-500">
+          <AlertCircle className="h-4 w-4 stroke-orange-600 dark:stroke-orange-500" />
+          <AlertTitle>Deduction Caution</AlertTitle>
+          <AlertDescription className="font-medium">
+            Please note that a <strong>10% deduction</strong> is applied to all withdrawal requests as a processing fee.
           </AlertDescription>
         </Alert>
 
@@ -141,6 +149,26 @@ export default function Withdraw() {
                       Max: ${availableBalance.toFixed(2)}
                     </button>
                   </div>
+                  {amount && !isNaN(parseFloat(amount)) && (
+                    <div className="bg-secondary/10 p-3 rounded-md mt-2 space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Requested Amount:</span>
+                        <span className="font-medium text-foreground">${parseFloat(amount).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-destructive/80">Deduction (10%):</span>
+                        <span className="font-medium text-destructive/80">-${(parseFloat(amount) * 0.10).toFixed(2)}</span>
+                      </div>
+                      <div className="h-px bg-border/50 my-1" />
+                      <div className="flex justify-between text-sm">
+                        <span className="font-semibold text-foreground">You Will Receive:</span>
+                        <span className="font-bold text-success">${(parseFloat(amount) * 0.90).toFixed(2)} USDT</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 italic">
+                        10% deduction will cut and only ${(parseFloat(amount) * 0.90).toFixed(2)} USDT will be withdrawn.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -151,7 +179,7 @@ export default function Withdraw() {
                     id="address"
                     type="text"
                     placeholder="Enter destination BEP-20 Wallet Address"
-                    className="glass border-amber-500/30 focus-visible:ring-amber-500/30 placeholder:text-amber-500/50"
+                    className="glass border-amber-500/30"
                     value={destinationAddress}
                     onChange={(e) => setDestinationAddress(e.target.value)}
                     disabled={createMutation.isPending}
@@ -244,7 +272,7 @@ export default function Withdraw() {
               </p>
               <p className="flex items-start gap-2">
                 <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                Network fee: 1 USDT (deducted from withdrawal)
+                Network fee: 10% (deducted from withdrawal)
               </p>
             </div>
             <div className="space-y-3 text-sm text-muted-foreground">

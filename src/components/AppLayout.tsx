@@ -33,7 +33,7 @@ const menuItems = [
   { icon: CreditCard, label: "Subscriptions", path: "/app/subscriptions" },
   { icon: ArrowDownToLine, label: "Redeem", path: "/app/redeem" },
   { icon: ArrowUpFromLine, label: "Withdraw", path: "/app/withdraw" },
-  { icon: ArrowRightLeft, label: "Transfer", path: "/app/transfer" },
+  // { icon: ArrowRightLeft, label: "Transfer", path: "/app/transfer" },
   { icon: Receipt, label: "Transactions", path: "/app/transactions" },
   { icon: Users, label: "Referrals", path: "/app/referrals" },
   { icon: Bell, label: "Notifications", path: "/app/notifications" },
