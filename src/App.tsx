@@ -58,6 +58,8 @@ const PublicLayout = () => {
 
 import { ThemeProvider } from "@/components/theme-provider";
 
+import ScrollToTop from "@/components/ScrollToTop";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -65,14 +67,15 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
+            <Route path="/app/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/app/terms-of-service" element={<TermsOfService />} />
             <Route element={<PublicLayout />}>
               <Route path="/auth/login" element={<Login />} />
               <Route path="/auth/signup" element={<Signup />} />
-              <Route path="/app/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/app/terms-of-service" element={<TermsOfService />} />
             </Route>
 
             {/* Protected routes */}

@@ -1,8 +1,10 @@
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo/logo.jpeg";
+import { useSetting } from "@/api/hooks/useSetting";
 
 export function Footer() {
+  const { data: setting } = useSetting();
   return (
     <footer className="glass-card border-t border-primary/20 mt-20">
       <div className="container mx-auto px-4 py-12">
@@ -48,11 +50,11 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <Mail className="w-4 h-4 text-primary" />
-                <span>support@cryptoinvest.io</span>
+                <span>{setting?.email}</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <Phone className="w-4 h-4 text-primary" />
-                <span>+1 (555) 123-4567</span>
+                <span>{setting?.phoneNumber}</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <MapPin className="w-4 h-4 text-primary" />

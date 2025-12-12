@@ -1,49 +1,25 @@
+import { UserStats } from "@/components/UserStats";
 import cryptoAbstract from "@/assets/crypto-abstract.jpg";
 import heroImage from "@/assets/hero-bg.jpg";
 import { CryptoMarquee } from "@/components/CryptoMarquee";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { ArrowRight, CheckCircle2, Shield, TrendingUp, User, Users, Zap } from "lucide-react";
-import { Link } from "react-router-dom";
 
-const subscriptionPlans = [
-  {
-    name: "Bronze Plan",
-    term: "3 Months",
-    roi: "10% Monthly",
-    min: "100 USDT",
-    max: "1,000 USDT",
-    features: ["Guaranteed 10% ROI", "Flexible withdrawal", "24/7 Support", "Referral bonus"],
-  },
-  {
-    name: "Silver Plan",
-    term: "6 Months",
-    roi: "10% Monthly",
-    min: "1,000 USDT",
-    max: "5,000 USDT",
-    features: ["Guaranteed 10% ROI", "Priority support", "Bonus rewards", "VIP referral bonus"],
-    popular: true,
-  },
-  {
-    name: "Gold Plan",
-    term: "12 Months",
-    roi: "10% Monthly",
-    min: "5,000 USDT",
-    max: "50,000 USDT",
-    features: ["Guaranteed 10% ROI", "Dedicated manager", "Exclusive perks", "Premium rewards"],
-  },
-];
+import { ArrowRight, Shield, TrendingUp, User, Users, Zap } from "lucide-react";
+import { Suspense } from "react";
+import { Link } from "react-router-dom";
+import { SubscriptionSection } from "@/components/SubscriptionSection";
+
+
 
 export default function Index() {
-
   return (
     <div className="min-h-screen">
       <Navbar />
 
       {/* Hero Section */}
-      <section 
+      <section
         className="relative pt-32 pb-20 px-4 overflow-hidden"
         style={{
           backgroundImage: `url(${heroImage})`,
@@ -53,7 +29,7 @@ export default function Index() {
       >
         <div className="absolute inset-0 bg-background/90" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
-        
+
         <div className="container mx-auto relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-6 animate-float">
@@ -68,7 +44,7 @@ export default function Index() {
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Join thousands of investors earning guaranteed 10% monthly returns on USDT investments. 
+              Join thousands of investors earning guaranteed 10% monthly returns on USDT investments.
               Secure, transparent, and profitable.
             </p>
 
@@ -101,7 +77,7 @@ export default function Index() {
                 Why Choose <span className="gradient-text">CryptoInvest?</span>
               </h2>
               <p className="text-muted-foreground mb-6">
-                We leverage advanced trading algorithms and market expertise to generate consistent 
+                We leverage advanced trading algorithms and market expertise to generate consistent
                 returns for our investors. Your investment is secure, transparent, and profitable.
               </p>
 
@@ -157,103 +133,10 @@ export default function Index() {
       </section>
 
       {/* User Stats Section */}
-      <section className="py-20 px-4 bg-gradient-to-b from-card to-background">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">
-              Join Our Growing <span className="gradient-text">Community</span>
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Thousands of satisfied investors trust CryptoInvest for their crypto journey.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="glass-card p-8 rounded-2xl text-center">
-              <User className="w-16 h-16 text-primary mx-auto mb-4 opacity-20" />
-              <div className="text-5xl font-bold gradient-text mb-2">10,000+</div>
-              <div className="text-xl font-semibold text-foreground">Active Users</div>
-              <p className="text-sm text-muted-foreground mt-2">Investing daily with guaranteed returns</p>
-            </div>
-            <div className="glass-card p-8 rounded-2xl text-center">
-              <Users className="w-16 h-16 text-primary mx-auto mb-4 opacity-20" />
-              <div className="text-5xl font-bold gradient-text mb-2">50,000+</div>
-              <div className="text-xl font-semibold text-foreground">Total Users</div>
-              <p className="text-sm text-muted-foreground mt-2">Join the largest crypto investment network</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <UserStats />
 
       {/* Investment Plans */}
-      <section id="plans" className="py-20 px-4 bg-gradient-to-b from-background to-card">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">
-              Choose Your <span className="gradient-text">Investment Plan</span>
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Select the plan that fits your investment goals. All plans guarantee 10% monthly ROI.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {subscriptionPlans.map((plan, index) => (
-              <Card
-                key={index}
-                className={`glass-card p-6 relative ${
-                  plan.popular ? "border-primary glow" : ""
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="bg-gradient-primary px-4 py-1 rounded-full text-sm font-medium text-foreground">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
-                  <p className="text-muted-foreground text-sm mb-4">{plan.term}</p>
-                  <div className="text-3xl font-bold gradient-text">{plan.roi}</div>
-                </div>
-
-                <div className="space-y-2 mb-6">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Min Investment:</span>
-                    <span className="font-semibold text-foreground">{plan.min}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Max Investment:</span>
-                    <span className="font-semibold text-foreground">{plan.max}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-3 mb-6">
-                  {plan.features.map((feature, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <Link to="/auth/signup">
-                  <Button
-                    className={`w-full ${
-                      plan.popular
-                        ? "bg-gradient-primary glow"
-                        : "bg-primary/10 hover:bg-primary/20"
-                    }`}
-                  >
-                    Invest Now
-                  </Button>
-                </Link>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      <SubscriptionSection />
 
       {/* Referral Info */}
       <section className="py-20 px-4">
@@ -265,7 +148,7 @@ export default function Index() {
                   <span className="gradient-text">Referral Program</span>
                 </h2>
                 <p className="text-muted-foreground mb-6">
-                  Earn extra income by referring friends and family to CryptoInvest. 
+                  Earn extra income by referring friends and family to CryptoInvest.
                   Our multi-level referral system rewards you for every successful referral.
                 </p>
                 <div className="space-y-3">
