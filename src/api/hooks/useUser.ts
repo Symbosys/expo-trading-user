@@ -1,5 +1,5 @@
 // api/hooks/useUser.ts
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from '@/api/apiClient';
 import { getAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
@@ -17,6 +17,11 @@ interface User {
   currentLevel: number;
   createdAt: Date;
   updatedAt: Date;
+  wallet?: {
+    walletAddress: string;
+    currency: string;
+    balance: string;
+  } | null;
   // Add other fields as needed from the full include
 }
 
@@ -34,3 +39,22 @@ export const useUser = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes stale time for freshness
   });
 };
+
+export const useUpdateUser = () => {
+  const { userId } = getAuth();
+
+  return useMutation<User, AxiosError, User>({
+    mutationFn: async (user) => {
+      if (!userId) throw new Error('User ID not available');
+      const { data } = await api.put(`/user/${userId}`, user);
+      return data.data;
+    },
+    onSuccess: () => {
+      toast.success('User updated successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update user');
+    },
+  });
+};
+

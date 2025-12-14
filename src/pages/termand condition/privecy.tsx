@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer"; // Import the Footer component
+import { Footer } from "@/components/Footer"; 
 
 const PrivacyPolicy = () => {
   const sections = [
@@ -89,7 +89,7 @@ const PrivacyPolicy = () => {
             {sections.map((section) => (
               <div
                 key={section.id}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border-2 border-gray-700/50 border-blue-500/40 bg-blue-500/5"
+                className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border-2 border-gray-700/50"
               >
                 <div className="p-6">
                   <h2 className={`text-2xl font-bold mb-4 flex items-center gap-2 bg-gradient-to-r ${section.color} bg-clip-text text-transparent`}>

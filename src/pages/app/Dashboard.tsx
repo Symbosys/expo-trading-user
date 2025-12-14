@@ -62,7 +62,7 @@ export default function Dashboard() {
       <AppLayout>
         <div className="space-y-6">
           <div className="glass-card p-6 rounded-xl glow">
-            <p className="text-muted-foreground">Loading dashboard...</p>
+            <p className="text-destructive">Failed to load dashboard data.</p>
           </div>
         </div>
       </AppLayout>
@@ -95,13 +95,13 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <div className="glass px-4 py-2 rounded-lg flex-1 sm:flex-none min-w-0">
-                <code className="text-sm text-foreground truncate block">{dashboard.referralLink}</code>
+              <div className="glass px-4 py-2 rounded-lg flex-1 sm:flex-none">
+                <code className="text-sm text-foreground">{dashboard.referralLink}</code>
               </div>
               <Button
                 size="sm"
                 onClick={handleCopyLink}
-                className="bg-primary/20 hover:bg-primary/30 shrink-0"
+                className="bg-primary/20 hover:bg-primary/30"
                 disabled={!dashboard.referralLink}
               >
                 {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -299,7 +299,7 @@ export default function Dashboard() {
                   <p className="text-sm text-muted-foreground">{plan.duration} • ${plan.amountInvested} invested</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-success">{plan.roiMonthly}</p>
+                  <p className="font-bold text-success">{plan.roiRate}</p>
                   <p className="text-xs text-muted-foreground">{plan.remaining}</p>
                 </div>
               </div>

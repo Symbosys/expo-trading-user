@@ -1,65 +1,53 @@
 import { AppLayout } from "@/components/AppLayout";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock, TrendingUp } from "lucide-react";
-import { toast } from "sonner";
+import { getAuth } from "@/hooks/auth";
+import { useInView } from 'react-intersection-observer';
+import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useROIRecords } from "@/api/hooks/useRoI";
+import { useSubscriptionPlans } from "@/api/hooks/useSubscription";
 
-const investments = [
-  {
-    id: "INV001",
-    plan: "Bronze Plan",
-    invested: "1,000",
-    roi: "300",
-    total: "1,300",
-    status: "Matured",
-    startDate: "2024-01-15",
-    endDate: "2024-04-15",
-    canRedeem: true,
-  },
-  {
-    id: "INV002",
-    plan: "Silver Plan",
-    invested: "5,000",
-    roi: "3,000",
-    total: "8,000",
-    status: "Matured",
-    startDate: "2023-12-01",
-    endDate: "2024-06-01",
-    canRedeem: true,
-  },
-  {
-    id: "INV003",
-    plan: "Bronze Plan",
-    invested: "500",
-    roi: "100",
-    total: "600",
-    status: "Matured",
-    startDate: "2024-02-10",
-    endDate: "2024-05-10",
-    canRedeem: true,
-  },
-  {
-    id: "INV004",
-    plan: "Silver Plan",
-    invested: "2,000",
-    roi: "800",
-    total: "2,800",
-    status: "Active",
-    startDate: "2024-04-01",
-    endDate: "2024-10-01",
-    canRedeem: false,
-  },
-];
+export default function ROIHistory() {
+  const { userId } = getAuth();
+  const { data: plans = [] } = useSubscriptionPlans(userId);
 
-export default function Redeem() {
-  const handleRedeem = (id: string, amount: string) => {
-    toast.success(`Redeemed $${amount} successfully! Funds will be credited to your wallet.`);
-  };
+  const [selectedPlanId, setSelectedPlanId] = useState<string | undefined>(undefined);
+  const [startDate, setStartDate] = useState<string | undefined>(undefined);
+  const [endDate, setEndDate] = useState<string | undefined>(undefined);
 
-  const totalRedeemable = investments
-    .filter((inv) => inv.canRedeem)
-    .reduce((sum, inv) => sum + parseFloat(inv.total), 0);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useROIRecords(
+    userId,
+    selectedPlanId,
+    startDate,
+    endDate
+  );
+
+  const allRoiRecords = data?.pages.flatMap(page => page.data) || [];
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
+
+  const totalRoiEarned = allRoiRecords.reduce((sum, record) => sum + Number(record.roiAmount), 0);
+  const totalReferralBonusApplied = allRoiRecords.filter(record => record.isReferralBonusApplied).length;
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="space-y-6">
+          <div className="text-center">Loading ROI history...</div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -67,12 +55,51 @@ export default function Redeem() {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            <span className="gradient-text">Redeem</span> Investments
+            <span className="gradient-text">ROI</span> History
           </h1>
           <p className="text-muted-foreground">
-            Claim your matured investments and accumulated returns
+            View your accumulated returns from investments
           </p>
         </div>
+
+        {/* Filters */}
+        <Card className="glass-card p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Filters</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="plan">Plan</Label>
+              <Select value={selectedPlanId || "all"} onValueChange={(val) => setSelectedPlanId(val === "all" ? undefined : val)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Plans" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Plans</SelectItem>
+                  {plans.map(plan => (
+                    <SelectItem key={plan.id} value={plan.id}>{plan.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="startDate">Start Date</Label>
+              <Input
+                id="startDate"
+                type="date"
+                value={startDate || ''}
+                onChange={(e) => setStartDate(e.target.value || undefined)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="endDate">End Date</Label>
+              <Input
+                id="endDate"
+                type="date"
+                value={endDate || ''}
+                onChange={(e) => setEndDate(e.target.value || undefined)}
+              />
+            </div>
+          </div>
+        </Card>
 
         {/* Summary Card */}
         <Card className="glass-card p-6">
@@ -82,9 +109,9 @@ export default function Redeem() {
                 <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center glow">
                   <CheckCircle2 className="w-5 h-5 text-success" />
                 </div>
-                <p className="text-sm text-muted-foreground">Total Redeemable</p>
+                <p className="text-sm text-muted-foreground">Total ROI Earned</p>
               </div>
-              <p className="text-3xl font-bold gradient-text">${totalRedeemable.toLocaleString()}</p>
+              <p className="text-3xl font-bold gradient-text">${totalRoiEarned.toLocaleString()}</p>
             </div>
 
             <div className="glass p-4 rounded-lg">
@@ -92,10 +119,10 @@ export default function Redeem() {
                 <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center glow">
                   <TrendingUp className="w-5 h-5 text-primary" />
                 </div>
-                <p className="text-sm text-muted-foreground">Matured Plans</p>
+                <p className="text-sm text-muted-foreground">Total Records</p>
               </div>
               <p className="text-3xl font-bold text-foreground">
-                {investments.filter((inv) => inv.canRedeem).length}
+                {allRoiRecords.length}
               </p>
             </div>
 
@@ -104,19 +131,19 @@ export default function Redeem() {
                 <div className="w-10 h-10 rounded-lg bg-warning/20 flex items-center justify-center glow">
                   <Clock className="w-5 h-5 text-warning" />
                 </div>
-                <p className="text-sm text-muted-foreground">Active Plans</p>
+                <p className="text-sm text-muted-foreground">Referral Bonus Applied</p>
               </div>
               <p className="text-3xl font-bold text-foreground">
-                {investments.filter((inv) => !inv.canRedeem).length}
+                {totalReferralBonusApplied}
               </p>
             </div>
           </div>
         </Card>
 
-        {/* Investments Table */}
+        {/* ROI History Table */}
         <Card className="glass-card p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
-            Investment History
+            ROI Records
           </h3>
 
           {/* Desktop Table */}
@@ -125,79 +152,56 @@ export default function Redeem() {
               <thead>
                 <tr className="border-b border-primary/20">
                   <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Week
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    ROI Amount
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    Investment Amount
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
                     Plan
                   </th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                    Invested
+                    Referral Bonus
                   </th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                    ROI Earned
-                  </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                    Total Amount
-                  </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                    Status
-                  </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                    Period
-                  </th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">
-                    Action
+                    Date
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {investments.map((investment) => (
+                {allRoiRecords.map((record) => (
                   <tr
-                    key={investment.id}
+                    key={record.id}
                     className="border-b border-primary/10 hover:bg-primary/5 transition-colors"
                   >
-                    <td className="py-4 px-4">
-                      <div>
-                        <p className="font-medium text-foreground">{investment.plan}</p>
-                        <p className="text-xs text-muted-foreground">#{investment.id}</p>
-                      </div>
-                    </td>
                     <td className="py-4 px-4 font-medium text-foreground">
-                      ${investment.invested}
+                      Week {record.weekNumber}
                     </td>
                     <td className="py-4 px-4 font-medium text-success">
-                      +${investment.roi}
+                      ${Number(record.roiAmount).toLocaleString()}
                     </td>
-                    <td className="py-4 px-4 font-bold text-foreground">
-                      ${investment.total}
+                    <td className="py-4 px-4 font-medium text-foreground">
+                      ${record.investment ? Number(record.investment.amountInvested).toLocaleString() : 'N/A'}
+                    </td>
+                    <td className="py-4 px-4 text-muted-foreground">
+                      {record.investment?.plan?.name || 'N/A'}
                     </td>
                     <td className="py-4 px-4">
                       <Badge
                         className={
-                          investment.canRedeem
+                          record.isReferralBonusApplied
                             ? "bg-success/20 text-success border-success/30"
-                            : "bg-warning/20 text-warning border-warning/30"
+                            : "bg-muted text-muted-foreground border-muted"
                         }
                       >
-                        {investment.status}
+                        {record.isReferralBonusApplied ? "Applied" : "Not Applied"}
                       </Badge>
                     </td>
-                    <td className="py-4 px-4">
-                      <div className="text-sm">
-                        <p className="text-muted-foreground">{investment.startDate}</p>
-                        <p className="text-muted-foreground">to {investment.endDate}</p>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-right">
-                      <Button
-                        size="sm"
-                        disabled={!investment.canRedeem}
-                        onClick={() => handleRedeem(investment.id, investment.total)}
-                        className={
-                          investment.canRedeem
-                            ? "bg-gradient-primary glow"
-                            : "bg-muted text-muted-foreground cursor-not-allowed"
-                        }
-                      >
-                        {investment.canRedeem ? "Redeem" : "Locked"}
-                      </Button>
+                    <td className="py-4 px-4 text-sm text-muted-foreground">
+                      {new Date(record.createdAt).toLocaleString()}
                     </td>
                   </tr>
                 ))}
@@ -207,78 +211,79 @@ export default function Redeem() {
 
           {/* Mobile Cards */}
           <div className="md:hidden space-y-4">
-            {investments.map((investment) => (
-              <div key={investment.id} className="glass p-4 rounded-lg">
+            {allRoiRecords.map((record) => (
+              <div key={record.id} className="glass p-4 rounded-lg">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <p className="font-semibold text-foreground">{investment.plan}</p>
-                    <p className="text-xs text-muted-foreground">#{investment.id}</p>
+                    <p className="font-semibold text-foreground">Week {record.weekNumber}</p>
+                    <p className="text-xs text-muted-foreground">#{record.id}</p>
                   </div>
                   <Badge
                     className={
-                      investment.canRedeem
+                      record.isReferralBonusApplied
                         ? "bg-success/20 text-success border-success/30"
-                        : "bg-warning/20 text-warning border-warning/30"
+                        : "bg-muted text-muted-foreground border-muted"
                     }
                   >
-                    {investment.status}
+                    {record.isReferralBonusApplied ? "Bonus Applied" : "Standard"}
                   </Badge>
                 </div>
 
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Invested:</span>
-                    <span className="font-medium text-foreground">${investment.invested}</span>
+                    <span className="text-muted-foreground">ROI Amount:</span>
+                    <span className="font-medium text-success">${Number(record.roiAmount).toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">ROI Earned:</span>
-                    <span className="font-medium text-success">+${investment.roi}</span>
+                    <span className="text-muted-foreground">Investment:</span>
+                    <span className="font-medium text-foreground">
+                      ${record.investment ? Number(record.investment.amountInvested).toLocaleString() : 'N/A'}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Total Amount:</span>
-                    <span className="font-bold text-foreground">${investment.total}</span>
+                    <span className="text-muted-foreground">Plan:</span>
+                    <span className="font-medium text-foreground">
+                      {record.investment?.plan?.name || 'N/A'}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Period:</span>
+                    <span className="text-muted-foreground">Date:</span>
                     <span className="text-muted-foreground text-xs">
-                      {investment.startDate} - {investment.endDate}
+                      {new Date(record.createdAt).toLocaleString()}
                     </span>
                   </div>
                 </div>
-
-                <Button
-                  className="w-full"
-                  disabled={!investment.canRedeem}
-                  onClick={() => handleRedeem(investment.id, investment.total)}
-                >
-                  {investment.canRedeem ? "Redeem Now" : "Locked"}
-                </Button>
               </div>
             ))}
+          </div>
+
+          {/* Infinite Scroll Trigger */}
+          <div ref={ref} className="flex justify-center py-4">
+            {isFetchingNextPage && <p className="text-muted-foreground">Loading more...</p>}
           </div>
         </Card>
 
         {/* Info */}
         <Card className="glass-card p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">
-            Redemption Information
+            ROI Information
           </h3>
           <div className="space-y-3 text-sm text-muted-foreground">
             <p className="flex items-start gap-2">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-              Redeemed funds are instantly credited to your wallet balance.
+              ROI is credited automatically to your wallet balance.
             </p>
             <p className="flex items-start gap-2">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-              You can redeem investments only after the plan term has completed.
+              Referral bonuses may be applied to eligible ROI records.
             </p>
             <p className="flex items-start gap-2">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-              Redemption includes both your principal investment and accumulated ROI.
+              Records are grouped by week for better organization.
             </p>
             <p className="flex items-start gap-2">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-              No fees are charged for redemption transactions.
+              No fees are charged on ROI credits.
             </p>
           </div>
         </Card>
