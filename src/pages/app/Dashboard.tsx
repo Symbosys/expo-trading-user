@@ -62,7 +62,7 @@ export default function Dashboard() {
       <AppLayout>
         <div className="space-y-6">
           <div className="glass-card p-6 rounded-xl glow">
-            <p className="text-destructive">Failed to load dashboard data.</p>
+            <p className="text-destructive">Loading dashboard data...</p>
           </div>
         </div>
       </AppLayout>
