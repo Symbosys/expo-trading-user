@@ -4,9 +4,12 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 import { ModeToggle } from "./mode-toggle";
 import logo from "@/assets/logo/logo.jpeg";
+import { getAuth } from "@/hooks/auth";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const { userId } = getAuth();
 
   return (
     <nav className="fixed top-0 w-full z-50 glass-card border-b border-primary/20">
@@ -19,7 +22,7 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            <Link to="/#about" className="text-foreground/80 hover:text-primary transition-colors">
+            {/* <Link to="/#about" className="text-foreground/80 hover:text-primary transition-colors">
               About
             </Link>
             <Link to="/#plans" className="text-foreground/80 hover:text-primary transition-colors">
@@ -27,16 +30,24 @@ export function Navbar() {
             </Link>
             <Link to="/#contact" className="text-foreground/80 hover:text-primary transition-colors">
               Contact
-            </Link>
+            </Link> */}
             <ModeToggle />
-            <Link to="/auth/login">
-              <Button variant="outline" className="border-primary/30 hover:bg-primary/10">
-                Login
-              </Button>
-            </Link>
-            <Link to="/auth/signup">
-              <Button className="bg-gradient-primary glow-pulse border-0">Get Started</Button>
-            </Link>
+            {userId ? (
+              <Link to="/app/dashboard">
+                <Button className="bg-gradient-primary glow-pulse border-0">Dashboard</Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/auth/login">
+                  <Button variant="outline" className="border-primary/30 hover:bg-primary/10">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/auth/signup">
+                  <Button className="bg-gradient-primary glow-pulse border-0">Get Started</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -75,14 +86,22 @@ export function Navbar() {
             >
               Contact
             </Link>
-            <Link to="/auth/login" onClick={() => setIsMenuOpen(false)}>
-              <Button variant="outline" className="w-full border-primary/30">
-                Login
-              </Button>
-            </Link>
-            <Link to="/auth/signup" onClick={() => setIsMenuOpen(false)}>
-              <Button className="w-full bg-gradient-primary">Get Started</Button>
-            </Link>
+            {userId ? (
+              <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                <Button className="w-full bg-gradient-primary">Dashboard</Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/auth/login" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="outline" className="w-full border-primary/30">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/auth/signup" onClick={() => setIsMenuOpen(false)}>
+                  <Button className="w-full bg-gradient-primary">Get Started</Button>
+                </Link>
+              </>
+            )}
           </div>
         )}
       </div>

@@ -2,9 +2,12 @@ import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "luc
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo/logo.jpeg";
 import { useSetting } from "@/api/hooks/useSetting";
+import { getAuth } from "@/hooks/auth";
 
 export function Footer() {
   const { data: setting } = useSetting();
+  const { userId } = getAuth();
+
   return (
     <footer className="glass-card border-t border-primary/20 mt-20">
       <div className="container mx-auto px-4 py-12">
@@ -26,15 +29,20 @@ export function Footer() {
               <Link to="/" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
                 Home
               </Link>
-              <Link to="/auth/login" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
-                Login
-              </Link>
-              <Link to="/auth/signup" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
-                Sign Up
-              </Link>
-              <Link to="/app/dashboard" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
-                Dashboard
-              </Link>
+              {userId ? (
+                <Link to="/app/dashboard" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link to="/auth/login" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                    Login
+                  </Link>
+                  <Link to="/auth/signup" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
+                    Sign Up
+                  </Link>
+                </>
+              )}
               <Link to="/app/privacy-policy" className="block text-muted-foreground hover:text-primary transition-colors text-sm">
                 Privacy Policy
               </Link>
@@ -58,7 +66,7 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <MapPin className="w-4 h-4 text-primary" />
-                <span>123 Crypto Street, NY</span>
+                <span>{setting?.location}</span>
               </div>
             </div>
           </div>

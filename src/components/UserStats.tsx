@@ -65,13 +65,13 @@ export function UserStats() {
                 <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                     <div className="glass-card p-8 rounded-2xl text-center">
                         <User className="w-16 h-16 text-primary mx-auto mb-4 opacity-20" />
-                        <div className="text-5xl font-bold gradient-text mb-2">{setting.activeUser}</div>
+                        <div className="text-5xl font-bold gradient-text mb-2">{setting.activeUser}+</div>
                         <div className="text-xl font-semibold text-foreground">Active Users</div>
                         <p className="text-sm text-muted-foreground mt-2">Investing daily with guaranteed returns</p>
                     </div>
                     <div className="glass-card p-8 rounded-2xl text-center">
                         <Users className="w-16 h-16 text-primary mx-auto mb-4 opacity-20" />
-                        <div className="text-5xl font-bold gradient-text mb-2">{setting.totalUser}</div>
+                        <div className="text-5xl font-bold gradient-text mb-2">{setting.totalUser}+</div>
                         <div className="text-xl font-semibold text-foreground">Total Users</div>
                         <p className="text-sm text-muted-foreground mt-2">Join the largest crypto investment network</p>
                     </div>

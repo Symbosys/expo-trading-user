@@ -10,10 +10,12 @@ import { ArrowRight, Shield, TrendingUp, User, Users, Zap } from "lucide-react";
 import { Suspense } from "react";
 import { Link } from "react-router-dom";
 import { SubscriptionSection } from "@/components/SubscriptionSection";
+import { getAuth } from "@/hooks/auth";
 
 
 
 export default function Index() {
+  const { userId } = getAuth();
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -49,12 +51,21 @@ export default function Index() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/auth/signup">
-                <Button size="lg" className="bg-gradient-primary glow-pulse text-lg px-8 py-6">
-                  Start Investing Now
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
+              {userId ? (
+                <Link to="/app/dashboard">
+                  <Button size="lg" className="bg-gradient-primary glow-pulse text-lg px-8 py-6">
+                    Go to Dashboard
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/auth/signup">
+                  <Button size="lg" className="bg-gradient-primary glow-pulse text-lg px-8 py-6">
+                    Start Investing Now
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
+              )}
               <Link to="#about">
                 <Button size="lg" variant="outline" className="border-primary/30 text-lg px-8 py-6">
                   Learn More
@@ -194,12 +205,21 @@ export default function Index() {
           <p className="text-muted-foreground mb-8">
             Join CryptoInvest today and start earning guaranteed returns on your USDT investments.
           </p>
-          <Link to="/auth/signup">
-            <Button size="lg" className="bg-gradient-primary glow-pulse text-lg px-8 py-6">
-              Create Your Account
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
+          {userId ? (
+            <Link to="/app/dashboard">
+              <Button size="lg" className="bg-gradient-primary glow-pulse text-lg px-8 py-6">
+                Go to Dashboard
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/auth/signup">
+              <Button size="lg" className="bg-gradient-primary glow-pulse text-lg px-8 py-6">
+                Create Your Account
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+          )}
         </div>
       </section>
 

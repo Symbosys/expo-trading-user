@@ -7,6 +7,7 @@ interface Setting {
     email: string;
     activeUser: string;
     totalUser: string;
+    location: string;
     createdAt: string;
     updatedAt: string;
 }
