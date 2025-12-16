@@ -8,22 +8,31 @@ import { useInView } from 'react-intersection-observer';
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
-// Backend-aligned Notification interface (no meta)
-interface Notification {
+interface NotificationContent {
     id: string;
     title: string;
     message: string;
-    type: "INFO" | "SUCCESS" | "WARNING" | "ERROR" | "PROMOTIONAL" | "SYSTEM";
+    type: string;
+    meta: any;
+    expiresAt: string | null;
     createdAt: string;
     updatedAt: string;
 }
 
+interface NotificationItem {
+    id: string;
+    userId: string;
+    notificationId: string;
+    createdAt: string;
+    notification: NotificationContent;
+}
+
 // TanStack Infinite Query hook for fetching notifications with pagination
-const useInfiniteNotifications = () => {
+const useInfiniteNotifications = (userId: string) => {
     return useInfiniteQuery({
-        queryKey: ['notifications'],
+        queryKey: ['notifications', userId],
         queryFn: async ({ pageParam = 1 }) => {
-            const { data } = await api.get(`/notifications/all?page=${pageParam}&limit=10`);
+            const { data } = await api.get(`/notifications/${userId}?page=${pageParam}&limit=10`);
             if (!data.success) {
                 throw new Error("Failed to fetch notifications");
             }
@@ -70,7 +79,8 @@ const getBadgeColor = (type: string) => {
 };
 
 export default function Notifications() {
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteNotifications();
+    const userId = localStorage.getItem("userId");
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteNotifications(userId!);
     const { ref, inView } = useInView();
 
     useEffect(() => {
@@ -107,30 +117,30 @@ export default function Notifications() {
                             <p>No notifications yet</p>
                         </div>
                     ) : (
-                        allNotifications.map((notification) => (
+                        allNotifications.map((notification: NotificationItem) => (
                             <Card
                                 key={notification.id}
                                 className={`glass-card p-4 transition-all hover:bg-primary/5`}
                             >
                                 <div className="flex items-start gap-4">
                                     <div className={`p-2 rounded-full bg-primary/10 mt-1`}>
-                                        {getIcon(notification.type)}
+                                        {getIcon(notification.notification.type)}
                                     </div>
                                     <div className="flex-1 space-y-1">
                                         <div className="flex items-center justify-between">
                                             <h3 className={`font-semibold text-foreground`}>
-                                                {notification.title}
+                                                {notification.notification.title}
                                             </h3>
                                             <span className="text-xs text-muted-foreground">
                                                 {new Date(notification.createdAt).toLocaleString()}
                                             </span>
                                         </div>
                                         <p className="text-sm text-muted-foreground">
-                                            {notification.message}
+                                            {notification.notification.message}
                                         </p>
                                         <div className="pt-2">
-                                            <Badge variant="outline" className={`${getBadgeColor(notification.type)} capitalize`}>
-                                                {notification.type.toLowerCase()}
+                                            <Badge variant="outline" className={`${getBadgeColor(notification.notification.type)} capitalize`}>
+                                                {notification.notification.type.toLowerCase()}
                                             </Badge>
                                         </div>
                                     </div>
