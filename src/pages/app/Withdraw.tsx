@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ArrowUpFromLine, AlertCircle, CheckCircle2, Wallet, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { useUserWithdrawals, useCreateWithdrawal } from "@/api/hooks/useWithdrawals";
 import { useWallet } from "@/api/hooks/useWallet";
@@ -17,10 +17,10 @@ export default function Withdraw() {
   const { data: withdrawals = [], isLoading: withdrawalsLoading } = useUserWithdrawals();
   const createMutation = useCreateWithdrawal();
 
-  const availableBalance = wallet ? parseFloat(wallet.balance) : 0;
+  const availableBalance = wallet?.balance ? parseFloat(String(wallet.balance)) : 0;
   const minWithdraw = 10.0;
 
-  const handleWithdraw = (e: React.FormEvent) => {
+  const handleWithdraw = (e: FormEvent) => {
     e.preventDefault();
 
     const withdrawAmount = parseFloat(amount);
@@ -53,11 +53,12 @@ export default function Withdraw() {
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "APPROVED":
-      case "COMPLETED":
+      case "SUCCESS":
         return "bg-success/20 text-success";
       case "PENDING":
         return "bg-warning/20 text-warning";
       case "REJECTED":
+      case "FAILED":
         return "bg-destructive/20 text-destructive";
       default:
         return "bg-secondary/20 text-secondary";
@@ -73,6 +74,9 @@ export default function Withdraw() {
       </AppLayout>
     );
   }
+
+  // Ensure withdrawals is an array
+  const withdrawalList = Array.isArray(withdrawals) ? withdrawals : [];
 
   return (
     <AppLayout>
@@ -128,7 +132,6 @@ export default function Withdraw() {
                     <Input
                       id="amount"
                       type="number"
-                      step="0.01"
                       placeholder="0.00"
                       className="pl-7 glass text-lg"
                       value={amount}
@@ -298,13 +301,13 @@ export default function Withdraw() {
             Recent Withdrawals
           </h3>
           <div className="space-y-3">
-            {withdrawals.slice(0, 3).map((withdrawal) => (
+            {withdrawalList.slice(0, 3).map((withdrawal) => (
               <div
                 key={withdrawal.id}
                 className="glass p-4 rounded-lg flex items-center justify-between"
               >
                 <div>
-                  <p className="font-medium text-foreground">${withdrawal.amount.toFixed(2)}</p>
+                  <p className="font-medium text-foreground">${parseFloat(String(withdrawal.amount)).toFixed(2)}</p>
                   <p className="text-sm text-muted-foreground">
                     {new Date(withdrawal.createdAt).toLocaleDateString()}
                   </p>
@@ -316,7 +319,7 @@ export default function Withdraw() {
                 </div>
               </div>
             ))}
-            {withdrawals.length === 0 && (
+            {withdrawalList.length === 0 && (
               <p className="text-center text-muted-foreground py-4">No recent withdrawals</p>
             )}
           </div>
