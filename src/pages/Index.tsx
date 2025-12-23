@@ -6,11 +6,12 @@ import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 
-import { ArrowRight, Shield, TrendingUp, User, Users, Zap } from "lucide-react";
+import { ArrowRight, Download, FileText, Shield, TrendingUp, Users, Zap } from "lucide-react";
 import { Suspense } from "react";
 import { Link } from "react-router-dom";
 import { SubscriptionSection } from "@/components/SubscriptionSection";
 import { getAuth } from "@/hooks/auth";
+import expotradexPdf from "@/assets/pdf/Expotradex (1).pdf";
 
 
 
@@ -148,6 +149,130 @@ export default function Index() {
 
       {/* Investment Plans */}
       <SubscriptionSection />
+
+      {/* PDF Document Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-background via-card/30 to-background">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-6">
+              <Shield className="w-4 h-4 text-success" />
+              <span className="text-sm font-medium text-foreground">Official Company Document</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <span className="gradient-text">Company Overview</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Access our comprehensive whitepaper to understand our investment strategy, security measures, and guaranteed returns.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <div className="glass-card p-8 md:p-12 rounded-3xl glow relative overflow-hidden">
+              {/* Background decoration */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-primary rounded-full blur-3xl opacity-10 -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary rounded-full blur-3xl opacity-10 translate-y-1/2 -translate-x-1/2" />
+
+              <div className="relative grid md:grid-cols-2 gap-8 items-center">
+                {/* What's Inside */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-foreground mb-4">What's Inside</h4>
+
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-card/50 border border-primary/10 hover:border-primary/30 transition-colors">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-foreground">Investment Strategy</h5>
+                      <p className="text-sm text-muted-foreground">Our proven methodology for generating consistent returns</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-card/50 border border-primary/10 hover:border-primary/30 transition-colors">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center flex-shrink-0">
+                      <Shield className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-foreground">Security Measures</h5>
+                      <p className="text-sm text-muted-foreground">How we protect your investments 24/7</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-card/50 border border-primary/10 hover:border-primary/30 transition-colors">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center flex-shrink-0">
+                      <Zap className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-foreground">ROI Mechanics</h5>
+                      <p className="text-sm text-muted-foreground">Understanding your guaranteed monthly returns</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-card/50 border border-primary/10 hover:border-primary/30 transition-colors">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center flex-shrink-0">
+                      <Users className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-foreground">Company Profile</h5>
+                      <p className="text-sm text-muted-foreground">Meet the team behind Expotradex</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+                      Expotradex Whitepaper
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Our comprehensive document covers everything you need to know about Expotradex — from our investment methodology to security protocols and guaranteed return mechanisms.
+                    </p>
+                  </div>
+
+                  {/* Trust Indicators */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-card/50 p-3 rounded-xl border border-primary/10 text-center">
+                      <Shield className="w-5 h-5 text-success mx-auto mb-1" />
+                      <p className="text-xs font-medium text-foreground">Verified</p>
+                    </div>
+                    <div className="bg-card/50 p-3 rounded-xl border border-primary/10 text-center">
+                      <Zap className="w-5 h-5 text-warning mx-auto mb-1" />
+                      <p className="text-xs font-medium text-foreground">Official</p>
+                    </div>
+                    <div className="bg-card/50 p-3 rounded-xl border border-primary/10 text-center">
+                      <TrendingUp className="w-5 h-5 text-primary mx-auto mb-1" />
+                      <p className="text-xs font-medium text-foreground">Updated</p>
+                    </div>
+                  </div>
+
+                  {/* Download Button */}
+                  <a href={expotradexPdf} download="Expotradex.pdf" className="block">
+                    <Button size="lg" className="w-full bg-gradient-primary glow-pulse text-lg py-6 group">
+                      <Download className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+                      Download Whitepaper
+                    </Button>
+                  </a>
+
+                  {/* File Info */}
+                  <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <FileText className="w-3 h-3" />
+                      PDF Format
+                    </span>
+                    <span className="w-1 h-1 rounded-full bg-muted-foreground" />
+                    <span>Free Download</span>
+                    <span className="w-1 h-1 rounded-full bg-muted-foreground" />
+                    <span className="flex items-center gap-1">
+                      <Shield className="w-3 h-3 text-success" />
+                      Secure
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Referral Info */}
       <section className="py-20 px-4">
