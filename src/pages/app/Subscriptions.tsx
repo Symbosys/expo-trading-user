@@ -263,6 +263,12 @@ export default function Subscriptions() {
                       <p className="text-lg font-bold text-foreground">${plan?.maximumInvestment || "Unlimited"}</p>
                     </div>
                   </div>
+                  {plan.maximumEarning && (
+                    <div className="text-center mt-3 pt-3 border-t border-border/50">
+                      <p className="text-xs text-muted-foreground mb-1">Maximum Earning</p>
+                      <p className="text-lg font-bold text-success">${Number(plan.maximumEarning).toLocaleString()}</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-3 mb-6">

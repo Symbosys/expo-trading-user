@@ -128,6 +128,12 @@ export function SubscriptionSection() {
                                         <span className="text-muted-foreground">Max Investment:</span>
                                         <span className="font-semibold text-foreground">{max}</span>
                                     </div>
+                                    {plan.maximumEarning && (
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Max Earning:</span>
+                                            <span className="font-semibold text-success">${Number(plan.maximumEarning).toLocaleString()}</span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="space-y-3 mb-6">

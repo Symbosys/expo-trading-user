@@ -9,6 +9,7 @@ interface ROIRecord {
   weekNumber: number;
   roiAmount: string; // Decimal as string
   isReferralBonusApplied: boolean;
+  creditedForDate: string | null;
   createdAt: string;
   user?: { id: string; name: string | null; email: string }; // Included from controller
   investment?: { id: string; amountInvested: string; status: string; plan: { name: string } }; // Included from controller

@@ -201,7 +201,7 @@ export default function ROIHistory() {
                       </Badge>
                     </td>
                     <td className="py-4 px-4 text-sm text-muted-foreground">
-                      {new Date(record.createdAt).toLocaleString()}
+                      {new Date(record.creditedForDate || record.createdAt).toLocaleString()}
                     </td>
                   </tr>
                 ))}
@@ -249,7 +249,7 @@ export default function ROIHistory() {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Date:</span>
                     <span className="text-muted-foreground text-xs">
-                      {new Date(record.createdAt).toLocaleString()}
+                      {new Date(record.creditedForDate || record.createdAt).toLocaleString()}
                     </span>
                   </div>
                 </div>

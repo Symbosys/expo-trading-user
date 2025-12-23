@@ -9,6 +9,7 @@ interface SubscriptionPlan {
   maximumInvestment: number;
   roiPerMonth?: number;
   roiPerDay?: number;
+  maximumEarning?: number;
   durationInMonths: number;
   description?: string;
   isActive: boolean;
