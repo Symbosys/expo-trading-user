@@ -4,13 +4,14 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Lock, Mail, Share2, User, Wallet } from "lucide-react";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import logo from "@/assets/logo/logo.jpeg";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +23,14 @@ export default function Signup() {
     walletAddress: "",
     referredByCode: "",
   });
+
+  // Auto-populate referral code from URL query params
+  useEffect(() => {
+    const referralId = searchParams.get("referralId");
+    if (referralId) {
+      setFormData((prev) => ({ ...prev, referredByCode: referralId }));
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

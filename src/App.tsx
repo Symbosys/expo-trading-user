@@ -1,28 +1,29 @@
-
-
-
-
+import { lazy, Suspense } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
-import Dashboard from "./pages/app/Dashboard";
-import Redeem from "./pages/app/Redeem";
-import Referrals from "./pages/app/Referrals";
-import Settings from "./pages/app/Settings";
-import Subscriptions from "./pages/app/Subscriptions";
-import Transactions from "./pages/app/Transactions";
-import Transfer from "./pages/app/Transfer";
-import Wallet from "./pages/app/Wallet";
-import Withdraw from "./pages/app/Withdraw";
-import Login from "./pages/auth/Login";
-import Signup from "./pages/auth/Signup";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import PrivacyPolicy from "./pages/termand condition/privecy";
-import TermsOfService from "./pages/termand condition/term";
-import Notifications from "./pages/app/Notifications";
+import { ThemeProvider } from "@/components/theme-provider";
+import ScrollToTop from "@/components/ScrollToTop";
+
+// Lazy loaded components
+const Dashboard = lazy(() => import("./pages/app/Dashboard"));
+const Redeem = lazy(() => import("./pages/app/Redeem"));
+const Referrals = lazy(() => import("./pages/app/Referrals"));
+const Settings = lazy(() => import("./pages/app/Settings"));
+const Subscriptions = lazy(() => import("./pages/app/Subscriptions"));
+const Transactions = lazy(() => import("./pages/app/Transactions"));
+const Transfer = lazy(() => import("./pages/app/Transfer"));
+const Wallet = lazy(() => import("./pages/app/Wallet"));
+const Withdraw = lazy(() => import("./pages/app/Withdraw"));
+const Login = lazy(() => import("./pages/auth/Login"));
+const Signup = lazy(() => import("./pages/auth/Signup"));
+const Index = lazy(() => import("./pages/Index"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const PrivacyPolicy = lazy(() => import("./pages/termand condition/privecy"));
+const TermsOfService = lazy(() => import("./pages/termand condition/term"));
+const Notifications = lazy(() => import("./pages/app/Notifications"));
 
 
 const queryClient = new QueryClient({
@@ -32,6 +33,13 @@ const queryClient = new QueryClient({
     },
   }
 });
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+  </div>
+);
 
 /* ---------------- Protected Layout ---------------- */
 const ProtectedLayout = () => {
@@ -56,9 +64,6 @@ const PublicLayout = () => {
   return <Outlet />;
 };
 
-import { ThemeProvider } from "@/components/theme-provider";
-
-import ScrollToTop from "@/components/ScrollToTop";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -68,35 +73,37 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Index />} />
-            <Route path="/app/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/app/terms-of-service" element={<TermsOfService />} />
-            <Route element={<PublicLayout />}>
-              <Route path="/auth/login" element={<Login />} />
-              <Route path="/auth/signup" element={<Signup />} />
-            </Route>
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Index />} />
+              <Route path="/app/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/app/terms-of-service" element={<TermsOfService />} />
+              <Route element={<PublicLayout />}>
+                <Route path="/auth/login" element={<Login />} />
+                <Route path="/auth/signup" element={<Signup />} />
+              </Route>
 
-            {/* Protected routes */}
-            <Route path="/app" element={<ProtectedLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="wallet" element={<Wallet />} />
-              <Route path="subscriptions" element={<Subscriptions />} />
-              <Route path="redeem" element={<Redeem />} />
-              <Route path="withdraw" element={<Withdraw />} />
-              <Route path="transfer" element={<Transfer />} />
-              <Route path="transactions" element={<Transactions />} />
-              <Route path="referrals" element={<Referrals />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="notifications" element={<Notifications />} />
+              {/* Protected routes */}
+              <Route path="/app" element={<ProtectedLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="wallet" element={<Wallet />} />
+                <Route path="subscriptions" element={<Subscriptions />} />
+                <Route path="redeem" element={<Redeem />} />
+                <Route path="withdraw" element={<Withdraw />} />
+                <Route path="transfer" element={<Transfer />} />
+                <Route path="transactions" element={<Transactions />} />
+                <Route path="referrals" element={<Referrals />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="notifications" element={<Notifications />} />
 
-            </Route>
+              </Route>
 
-            {/* Catch-all */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              {/* Catch-all */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
