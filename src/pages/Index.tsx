@@ -167,7 +167,7 @@ export default function Index() {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <div className="glass-card p-8 md:p-12 rounded-3xl glow relative overflow-hidden">
+            <div className="glass-card p-4 sm:p-8 md:p-12 rounded-3xl glow relative overflow-hidden">
               {/* Background decoration */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-primary rounded-full blur-3xl opacity-10 -translate-y-1/2 translate-x-1/2" />
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary rounded-full blur-3xl opacity-10 translate-y-1/2 -translate-x-1/2" />
@@ -230,7 +230,7 @@ export default function Index() {
                   </div>
 
                   {/* Trust Indicators */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="bg-card/50 p-3 rounded-xl border border-primary/10 text-center">
                       <Shield className="w-5 h-5 text-success mx-auto mb-1" />
                       <p className="text-xs font-medium text-foreground">Verified</p>

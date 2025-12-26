@@ -171,8 +171,8 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Monthly ROI</p>
-              <p className="text-2xl font-bold text-foreground">${dashboard.kpis.monthlyROI}</p>
+              <p className="text-sm text-muted-foreground mb-1">Maximum Earning</p>
+              <p className="text-2xl font-bold text-foreground">${dashboard.kpis.maximumEarning}</p>
             </div>
           </Card>
 

@@ -1,14 +1,14 @@
 import { TrendingUp, TrendingDown } from "lucide-react";
 
 const cryptoData = [
-  { symbol: "BTC", name: "Bitcoin", price: "$65,234.00", change: 2.5, isUp: true },
-  { symbol: "ETH", name: "Ethereum", price: "$3,456.78", change: 1.8, isUp: true },
+  { symbol: "BTC", name: "Bitcoin", price: "$88,854.51", change: 2.5, isUp: true },
+  { symbol: "ETH", name: "Ethereum", price: "$2,977.78", change: 1.8, isUp: true },
   { symbol: "USDT", name: "Tether", price: "$1.00", change: 0.01, isUp: true },
-  { symbol: "BNB", name: "Binance", price: "$612.45", change: -0.5, isUp: false },
-  { symbol: "SOL", name: "Solana", price: "$178.90", change: 4.2, isUp: true },
-  { symbol: "XRP", name: "Ripple", price: "$0.56", change: -1.2, isUp: false },
-  { symbol: "ADA", name: "Cardano", price: "$0.45", change: 3.1, isUp: true },
-  { symbol: "DOGE", name: "Dogecoin", price: "$0.12", change: 5.8, isUp: true },
+  { symbol: "BNB", name: "Binance", price: "$841.45", change: -0.5, isUp: false },
+  { symbol: "SOL", name: "Solana", price: "$124.90", change: 4.2, isUp: true },
+  { symbol: "XRP", name: "Ripple", price: "$1.87", change: -1.2, isUp: false },
+  { symbol: "ADA", name: "Cardano", price: "$0.36", change: 3.1, isUp: true },
+  { symbol: "DOGE", name: "Dogecoin", price: "$0.13", change: 5.8, isUp: true },
 ];
 
 export function CryptoMarquee() {
@@ -17,7 +17,7 @@ export function CryptoMarquee() {
 
   return (
     <div className="w-full overflow-hidden glass-card py-4 border-y border-primary/20">
-      <div className="flex animate-marquee">
+      <div className="flex animate-marquee" style={{ animationDuration: "5s" }}>
         {duplicatedData.map((crypto, index) => (
           <div
             key={index}
@@ -39,9 +39,8 @@ export function CryptoMarquee() {
                     {crypto.price}
                   </span>
                   <span
-                    className={`text-xs flex items-center gap-0.5 ${
-                      crypto.isUp ? "text-success" : "text-destructive"
-                    }`}
+                    className={`text-xs flex items-center gap-0.5 ${crypto.isUp ? "text-success" : "text-destructive"
+                      }`}
                   >
                     {crypto.isUp ? (
                       <TrendingUp className="w-3 h-3" />
