@@ -7,7 +7,7 @@ import { Eye, EyeOff, Lock, Mail, Share2, User, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import logo from "@/assets/logo/logo.jpeg";
+import logo from "@/assets/logo/Expotradex-dark.png";
 
 export default function Signup() {
   const navigate = useNavigate();

@@ -21,7 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/api/hooks/useUser";
 import { getAuth } from "@/hooks/auth";
 import { ModeToggle } from "./mode-toggle";
-import logo from "@/assets/logo/logo.jpeg";
+import logo from "@/assets/logo/Expotradex-dark.png";
 
 interface AppLayoutProps {
   children: ReactNode;

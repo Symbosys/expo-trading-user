@@ -1,6 +1,6 @@
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo/logo.jpeg";
+import logo from "@/assets/logo/Expotradex-dark.png";
 import { useSetting } from "@/api/hooks/useSetting";
 import { getAuth } from "@/hooks/auth";
 

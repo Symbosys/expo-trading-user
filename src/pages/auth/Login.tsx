@@ -8,7 +8,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/api/apiClient";
 import { ErrorMessage } from "@/utils/utils";
-import logo from "@/assets/logo/logo.jpeg";
+import logo from "@/assets/logo/Expotradex-dark.png";
 
 export default function Login() {
   const navigate = useNavigate();

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { ModeToggle } from "./mode-toggle";
-import logo from "@/assets/logo/logo.jpeg";
+import logo from "@/assets/logo/Expotradex-dark.png";
 import { getAuth } from "@/hooks/auth";
 
 export function Navbar() {
@@ -87,7 +87,7 @@ export function Navbar() {
               Contact
             </Link>
             {userId ? (
-              <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/app/dashboard" onClick={() => setIsMenuOpen(false)}>
                 <Button className="w-full bg-gradient-primary">Dashboard</Button>
               </Link>
             ) : (

@@ -1,22 +1,21 @@
+import { api } from "@/api/apiClient";
 import { AppLayout } from "@/components/AppLayout";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { getAuth } from "@/hooks/auth";
+import { useQuery } from "@tanstack/react-query";
 import {
+  ArrowUpRight,
+  CheckCircle2,
+  Copy,
   DollarSign,
   TrendingUp,
   Users,
-  Wallet,
-  Copy,
-  CheckCircle2,
-  ArrowUpRight,
-  ArrowDownRight
+  Wallet
 } from "lucide-react";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useState } from "react";
+import { Bar, BarChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { toast } from "sonner";
-import { useUser } from "@/api/hooks/useUser";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/api/apiClient";
 
 const useDashboard = (userId: string) => {
   return useQuery({
@@ -26,16 +25,33 @@ const useDashboard = (userId: string) => {
       if (!data.success) {
         throw new Error("Failed to fetch dashboard data");
       }
+      // Update local storage with fresh data
+      if (userId) {
+        localStorage.setItem(`dashboard-data-${userId}`, JSON.stringify(data.data));
+      }
       return data.data;
     },
+    initialData: () => {
+      if (!userId) return undefined;
+      const cached = localStorage.getItem(`dashboard-data-${userId}`);
+      if (cached) {
+        try {
+          return JSON.parse(cached);
+        } catch (e) {
+          console.error("Cache parse error", e);
+        }
+      }
+      return undefined;
+    },
+    staleTime: 0, // Always fetch fresh data in background
     enabled: !!userId,
   });
 };
 
 export default function Dashboard() {
   const [copied, setCopied] = useState(false);
-  const { data: user } = useUser();
-  const { data: dashboard, isLoading } = useDashboard(user?.id || "");
+  const { userId } = getAuth();
+  const { data: dashboard, isLoading } = useDashboard(userId || "");
 
   const handleCopyLink = () => {
     if (!dashboard?.referralLink) return;

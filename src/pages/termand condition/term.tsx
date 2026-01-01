@@ -1,7 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo/logo.jpeg";
 import { Footer } from "@/components/Footer";
 
 
