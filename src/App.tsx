@@ -9,6 +9,9 @@ import ScrollToTop from "@/components/ScrollToTop";
 
 // Lazy loaded components
 const Dashboard = lazy(() => import("./pages/app/Dashboard"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Plans = lazy(() => import("./pages/Plans"));
 const Redeem = lazy(() => import("./pages/app/Redeem"));
 const Referrals = lazy(() => import("./pages/app/Referrals"));
 const Settings = lazy(() => import("./pages/app/Settings"));
@@ -77,6 +80,9 @@ const App = () => (
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/plans" element={<Plans />} />
               <Route path="/app/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/app/terms-of-service" element={<TermsOfService />} />
               <Route element={<PublicLayout />}>

@@ -8,6 +8,11 @@ import { getAuth } from "@/hooks/auth";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navLinks = [
+    { to: "/about", label: "About" },
+    { to: "/plans", label: "Plans" },
+    { to: "/contact", label: "Contact" },
+  ];
 
   const { userId } = getAuth();
 
@@ -22,15 +27,15 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            {/* <Link to="/#about" className="text-foreground/80 hover:text-primary transition-colors">
-              About
-            </Link>
-            <Link to="/#plans" className="text-foreground/80 hover:text-primary transition-colors">
-              Plans
-            </Link>
-            <Link to="/#contact" className="text-foreground/80 hover:text-primary transition-colors">
-              Contact
-            </Link> */}
+            {navLinks.map((item) => (
+              <Link
+                key={item.label}
+                to={item.to}
+                className="text-foreground/80 hover:text-primary transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
             <ModeToggle />
             {userId ? (
               <Link to="/app/dashboard">
@@ -65,27 +70,16 @@ export function Navbar() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-3">
-            <Link
-              to="/#about"
-              className="block text-foreground/80 hover:text-primary transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              to="/#plans"
-              className="block text-foreground/80 hover:text-primary transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Plans
-            </Link>
-            <Link
-              to="/#contact"
-              className="block text-foreground/80 hover:text-primary transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contact
-            </Link>
+            {navLinks.map((item) => (
+              <Link
+                key={item.label}
+                to={item.to}
+                className="block text-foreground/80 hover:text-primary transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
             {userId ? (
               <Link to="/app/dashboard" onClick={() => setIsMenuOpen(false)}>
                 <Button className="w-full bg-gradient-primary">Dashboard</Button>
