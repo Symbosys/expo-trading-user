@@ -66,7 +66,7 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <MapPin className="w-4 h-4 text-primary" />
-                <span>{setting?.location}</span>
+                {/* <span>{setting?.location}</span> */}
               </div>
             </div>
           </div>
