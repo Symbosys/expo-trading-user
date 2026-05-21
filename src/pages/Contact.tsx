@@ -2,7 +2,18 @@ import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Clock, Mail, MapPin, MessageSquare, Phone, Shield, Loader2, CheckCircle, X } from "lucide-react";
+import {
+  ArrowRight,
+  Clock,
+  Mail,
+  MapPin,
+  MessageSquare,
+  Phone,
+  Shield,
+  Loader2,
+  CheckCircle,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCreateEnquiry } from "@/api/hooks/enquiry";
@@ -46,7 +57,7 @@ export default function Contact() {
     {
       icon: MapPin,
       label: "Address",
-      value: "Harmu Housing Colony, Ranchi, Jharkhand, India",
+      value: "",
       link: "#",
     },
   ];
@@ -55,17 +66,17 @@ export default function Contact() {
     {
       icon: MessageSquare,
       title: "General Inquiries",
-      description: "Questions about our platform, content, or services"
+      description: "Questions about our platform, content, or services",
     },
     {
       icon: Shield,
       title: "Technical Support",
-      description: "Access issues, technical problems, or platform errors"
+      description: "Access issues, technical problems, or platform errors",
     },
     {
       icon: Mail,
       title: "Partnership",
-      description: "Business collaboration and partnership opportunities"
+      description: "Business collaboration and partnership opportunities",
     },
   ];
 
@@ -82,9 +93,9 @@ export default function Contact() {
       }
     }
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -138,28 +149,32 @@ export default function Contact() {
               Contact <span className="gradient-text">ExpoTradeX</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Thank you for your interest in ExpoTradeX. We are here to assist you with general inquiries, platform-related questions, and support regarding our educational content and services.
+              Thank you for your interest in ExpoTradeX. We are here to assist
+              you with general inquiries, platform-related questions, and
+              support regarding our educational content and services.
             </p>
           </div>
 
           {/* Contact Information Section */}
           <div className="mb-16">
-            <h3 className="text-3xl font-bold mb-8 text-center">Get In <span className="gradient-text">Touch</span></h3>
+            <h3 className="text-3xl font-bold mb-8 text-center">
+              Get In <span className="gradient-text">Touch</span>
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {contactInfo.map((info, index) => {
                 const Icon = info.icon;
                 return (
-                  <a
-                    key={index}
-                    href={info.link}
-                    className="group"
-                  >
+                  <a key={index} href={info.link} className="group">
                     <Card className="glass-card p-6 h-full">
                       <div className="mb-4">
                         <Icon className="w-8 h-8 text-primary" />
                       </div>
-                      <p className="text-sm text-muted-foreground mb-2">{info.label}</p>
-                      <p className="text-lg font-bold text-foreground break-words">{info.value}</p>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {info.label}
+                      </p>
+                      <p className="text-lg font-bold text-foreground break-words">
+                        {info.value}
+                      </p>
                     </Card>
                   </a>
                 );
@@ -175,11 +190,18 @@ export default function Contact() {
                   <Clock className="w-7 h-7 text-green-600 dark:text-green-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Business Hours</h3>
-                  <p className="text-lg text-gray-700 dark:text-gray-300 font-semibold">Monday to Saturday</p>
-                  <p className="text-lg text-gray-700 dark:text-gray-300">10:00 AM – 6:00 PM (IST)</p>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    Business Hours
+                  </h3>
+                  <p className="text-lg text-gray-700 dark:text-gray-300 font-semibold">
+                    Monday to Saturday
+                  </p>
+                  <p className="text-lg text-gray-700 dark:text-gray-300">
+                    10:00 AM – 6:00 PM (IST)
+                  </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 italic">
-                    We aim to respond to all genuine inquiries within a reasonable timeframe.
+                    We aim to respond to all genuine inquiries within a
+                    reasonable timeframe.
                   </p>
                 </div>
               </div>
@@ -202,8 +224,12 @@ export default function Contact() {
                     <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mb-4">
                       <Icon className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{topic.title}</h3>
-                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{topic.description}</p>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                      {topic.title}
+                    </h3>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {topic.description}
+                    </p>
                   </div>
                 );
               })}
@@ -211,7 +237,9 @@ export default function Contact() {
 
             <div className="mt-8 bg-emerald-50 dark:bg-gray-800/50 border-2 border-emerald-200 dark:border-emerald-500/30 rounded-xl p-8">
               <p className="text-gray-900 dark:text-emerald-300 leading-relaxed">
-                <span className="font-bold">Please note:</span> ExpoTradeX does not provide financial or investment advice. All queries are handled for informational and support purposes only.
+                <span className="font-bold">Please note:</span> ExpoTradeX does
+                not provide financial or investment advice. All queries are
+                handled for informational and support purposes only.
               </p>
             </div>
           </div>
@@ -224,23 +252,39 @@ export default function Contact() {
             <div className="bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl border-2 border-gray-200 dark:border-gray-700/50 p-12">
               <div className="space-y-6">
                 <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                  ExpoTradeX is committed to clear communication and ethical practices. Trading and financial markets involve risk, and users are responsible for their own decisions.
+                  ExpoTradeX is committed to clear communication and ethical
+                  practices. Trading and financial markets involve risk, and
+                  users are responsible for their own decisions.
                 </p>
                 <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                  Any information shared by our team is strictly educational in nature. We do not offer personalized trading recommendations or profit-related guidance.
+                  Any information shared by our team is strictly educational in
+                  nature. We do not offer personalized trading recommendations
+                  or profit-related guidance.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 pt-8 border-t border-gray-300 dark:border-gray-700">
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">✓</p>
-                    <p className="font-semibold text-gray-900 dark:text-white">Clear Communication</p>
+                    <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
+                      ✓
+                    </p>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      Clear Communication
+                    </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">✓</p>
-                    <p className="font-semibold text-gray-900 dark:text-white">Ethical Practices</p>
+                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                      ✓
+                    </p>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      Ethical Practices
+                    </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">✓</p>
-                    <p className="font-semibold text-gray-900 dark:text-white">User Responsibility</p>
+                    <p className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+                      ✓
+                    </p>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      User Responsibility
+                    </p>
                   </div>
                 </div>
               </div>
@@ -254,7 +298,8 @@ export default function Contact() {
                 Send Us a <span className="gradient-text">Message</span>
               </h3>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Have a question? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                Have a question? We'd love to hear from you. Send us a message
+                and we'll respond as soon as possible.
               </p>
             </div>
 
@@ -262,7 +307,9 @@ export default function Contact() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {fieldErrors.submit && (
                   <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-lg p-4">
-                    <p className="text-red-700 dark:text-red-400 font-semibold">{fieldErrors.submit}</p>
+                    <p className="text-red-700 dark:text-red-400 font-semibold">
+                      {fieldErrors.submit}
+                    </p>
                   </div>
                 )}
 
@@ -277,11 +324,18 @@ export default function Contact() {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Your name"
-                      className={`w-full px-4 py-3 rounded-lg bg-card/50 border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all ${fieldErrors.name ? "border-red-500 focus:border-red-500" : "border-primary/20 focus:border-primary"
-                        }`}
+                      className={`w-full px-4 py-3 rounded-lg bg-card/50 border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all ${
+                        fieldErrors.name
+                          ? "border-red-500 focus:border-red-500"
+                          : "border-primary/20 focus:border-primary"
+                      }`}
                       required
                     />
-                    {fieldErrors.name && <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>}
+                    {fieldErrors.name && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {fieldErrors.name}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-foreground mb-3">
@@ -293,11 +347,18 @@ export default function Contact() {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="your@email.com"
-                      className={`w-full px-4 py-3 rounded-lg bg-card/50 border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all ${fieldErrors.email ? "border-red-500 focus:border-red-500" : "border-primary/20 focus:border-primary"
-                        }`}
+                      className={`w-full px-4 py-3 rounded-lg bg-card/50 border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all ${
+                        fieldErrors.email
+                          ? "border-red-500 focus:border-red-500"
+                          : "border-primary/20 focus:border-primary"
+                      }`}
                       required
                     />
-                    {fieldErrors.email && <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>}
+                    {fieldErrors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {fieldErrors.email}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-foreground mb-3">
@@ -309,11 +370,18 @@ export default function Contact() {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="9999999999"
-                      className={`w-full px-4 py-3 rounded-lg bg-card/50 border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all ${fieldErrors.phone ? "border-red-500 focus:border-red-500" : "border-primary/20 focus:border-primary"
-                        }`}
+                      className={`w-full px-4 py-3 rounded-lg bg-card/50 border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all ${
+                        fieldErrors.phone
+                          ? "border-red-500 focus:border-red-500"
+                          : "border-primary/20 focus:border-primary"
+                      }`}
                       required
                     />
-                    {fieldErrors.phone && <p className="text-red-500 text-sm mt-1">{fieldErrors.phone}</p>}
+                    {fieldErrors.phone && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {fieldErrors.phone}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -327,11 +395,18 @@ export default function Contact() {
                     value={formData.subject}
                     onChange={handleChange}
                     placeholder="What is this about?"
-                    className={`w-full px-4 py-3 rounded-lg bg-card/50 border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all ${fieldErrors.subject ? "border-red-500 focus:border-red-500" : "border-primary/20 focus:border-primary"
-                      }`}
+                    className={`w-full px-4 py-3 rounded-lg bg-card/50 border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all ${
+                      fieldErrors.subject
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-primary/20 focus:border-primary"
+                    }`}
                     required
                   />
-                  {fieldErrors.subject && <p className="text-red-500 text-sm mt-1">{fieldErrors.subject}</p>}
+                  {fieldErrors.subject && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldErrors.subject}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -344,15 +419,24 @@ export default function Contact() {
                     onChange={handleChange}
                     placeholder="Your message here..."
                     rows={6}
-                    className={`w-full px-4 py-3 rounded-lg bg-card/50 border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all resize-none ${fieldErrors.message ? "border-red-500 focus:border-red-500" : "border-primary/20 focus:border-primary"
-                      }`}
+                    className={`w-full px-4 py-3 rounded-lg bg-card/50 border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all resize-none ${
+                      fieldErrors.message
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-primary/20 focus:border-primary"
+                    }`}
                     required
                   />
                   <div className="flex items-center justify-between mt-2">
                     <div>
-                      {fieldErrors.message && <p className="text-red-500 text-sm">{fieldErrors.message}</p>}
+                      {fieldErrors.message && (
+                        <p className="text-red-500 text-sm">
+                          {fieldErrors.message}
+                        </p>
+                      )}
                     </div>
-                    <p className={`text-xs font-medium ${wordCount > 240 ? "text-amber-600" : wordCount > 250 ? "text-red-600" : "text-muted-foreground"}`}>
+                    <p
+                      className={`text-xs font-medium ${wordCount > 240 ? "text-amber-600" : wordCount > 250 ? "text-red-600" : "text-muted-foreground"}`}
+                    >
                       {wordCount}/250 characters
                     </p>
                   </div>
@@ -384,11 +468,15 @@ export default function Contact() {
               Have More Questions?
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-              Check out our comprehensive resources and educational content to learn more about trading and our platform.
+              Check out our comprehensive resources and educational content to
+              learn more about trading and our platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/about">
-                <Button size="lg" className="bg-gradient-to-r from-emerald-500 to-blue-600 hover:opacity-90 gap-2">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-emerald-500 to-blue-600 hover:opacity-90 gap-2"
+                >
                   Learn About Us <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
@@ -406,7 +494,8 @@ export default function Contact() {
               ExpoTradeX – Support, Transparency, and Responsible Communication.
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              We're committed to providing excellent support and maintaining the highest ethical standards.
+              We're committed to providing excellent support and maintaining the
+              highest ethical standards.
             </p>
           </div>
         </div>
@@ -437,7 +526,8 @@ export default function Contact() {
               </h2>
 
               <p className="text-muted-foreground mb-2 leading-relaxed">
-                Thank you for reaching out to us. Your enquiry has been received and we'll get back to you as soon as possible.
+                Thank you for reaching out to us. Your enquiry has been received
+                and we'll get back to you as soon as possible.
               </p>
 
               <p className="text-sm text-muted-foreground mb-8">
