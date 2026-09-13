@@ -19,9 +19,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCreateEnquiry } from "@/api/hooks/enquiry";
 import { createEnquirySchema } from "@/validator/enquiry";
 import { ZodError } from "zod";
+import { useSetting } from "@/api/hooks/useSetting";
 
 export default function Contact() {
   const navigate = useNavigate();
+  const { data: setting } = useSetting();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -39,25 +41,19 @@ export default function Contact() {
     {
       icon: Mail,
       label: "Email",
-      value: "support@expotradex.com",
-      link: "mailto:support@expotradex.com",
-    },
-    {
-      icon: Mail,
-      label: "Alternative Email",
-      value: "tradexexpo@gmail.com",
-      link: "mailto:tradexexpo@gmail.com",
+      value: setting?.email,
+      link: setting?.email ? `mailto:${setting.email}` : "#",
     },
     {
       icon: Phone,
       label: "Phone",
-      value: "9296115827",
-      link: "tel:9296115827",
+      value: setting?.phoneNumber,
+      link: setting?.phoneNumber ? `tel:${setting.phoneNumber}` : "#",
     },
     {
       icon: MapPin,
       label: "Address",
-      value: "",
+      value: setting?.location,
       link: "#",
     },
   ];
@@ -160,7 +156,7 @@ export default function Contact() {
             <h3 className="text-3xl font-bold mb-8 text-center">
               Get In <span className="gradient-text">Touch</span>
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               {contactInfo.map((info, index) => {
                 const Icon = info.icon;
                 return (
@@ -480,7 +476,7 @@ export default function Contact() {
                   Learn About Us <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
-              <a href="mailto:support@expotradex.com">
+              <a href={setting?.email ? `mailto:${setting.email}` : "#"}>
                 <Button size="lg" variant="outline">
                   Email Support
                 </Button>
