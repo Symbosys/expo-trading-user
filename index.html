@@ -50,15 +50,14 @@
   </head>
 
   <body>
-    <div id="main">
+    <div id="root">
       <style>
         :root {
-          color-scheme: dark;
-          font-family: Georgia, "Times New Roman", serif;
-          background: #101214;
-          color: #e8e7e2;
+          color-scheme: light;
+          font-family: Arial, Helvetica, sans-serif;
+          background: #f6f8fa;
+          color: #202938;
           font-synthesis: none;
-          text-rendering: optimizeLegibility;
         }
 
         * {
@@ -69,16 +68,14 @@
           min-width: 320px;
           min-height: 100vh;
           margin: 0;
-          background:
-            radial-gradient(ellipse at 50% 44%, #1c2022 0, #101214 60%),
-            #101214;
+          background: #f6f8fa;
         }
 
         .outage-page {
           min-height: 100vh;
           display: grid;
           grid-template-rows: auto 1fr auto;
-          padding: 0 clamp(24px, 7vw, 104px);
+          padding: 0 32px;
         }
 
         .site-header,
@@ -86,193 +83,146 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          color: #999b98;
-          font: 11px/1.5 "Courier New", monospace;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
+          color: #697586;
+          font-size: 13px;
         }
 
         .site-header {
-          min-height: 82px;
-          border-bottom: 1px solid #303335;
+          width: min(100%, 1080px);
+          min-height: 72px;
+          margin: 0 auto;
+          border-bottom: 1px solid #e5e9ef;
         }
 
         .brand {
-          color: #e8e7e2;
-          font: 600 13px/1.2 "Courier New", monospace;
-          letter-spacing: 0.16em;
-        }
-
-        .header-note {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .status-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #d39b59;
-          box-shadow: 0 0 12px #d39b5966;
+          color: #202938;
+          font-size: 15px;
+          font-weight: 650;
+          letter-spacing: -0.02em;
         }
 
         .message {
-          width: min(100%, 720px);
+          width: min(100%, 520px);
           align-self: center;
           justify-self: center;
-          padding: 72px 0 86px;
+          padding: 48px 0;
+          text-align: center;
         }
 
-        .error-code {
+        .status {
           display: inline-flex;
           align-items: center;
-          gap: 12px;
-          margin-bottom: 34px;
-          color: #d39b59;
-          font: 12px/1.4 "Courier New", monospace;
-          letter-spacing: 0.13em;
-          text-transform: uppercase;
-        }
-
-        .error-code::before {
-          width: 30px;
-          height: 1px;
-          background: currentColor;
-          content: "";
+          gap: 8px;
+          margin-bottom: 22px;
+          padding: 7px 11px;
+          border: 1px solid #e7eaf0;
+          border-radius: 999px;
+          background: #fff;
+          color: #586579;
+          font-size: 12px;
+          font-weight: 500;
         }
 
         h1 {
-          max-width: 650px;
           margin: 0;
-          font-size: clamp(42px, 7vw, 76px);
-          font-weight: 400;
-          letter-spacing: -0.055em;
-          line-height: 0.99;
+          color: #202938;
+          font-size: clamp(30px, 5vw, 40px);
+          font-weight: 600;
+          letter-spacing: -0.04em;
+          line-height: 1.15;
         }
 
         .description {
-          max-width: 490px;
-          margin: 28px 0 0;
-          color: #a5a7a4;
-          font: 16px/1.8 "Courier New", monospace;
-        }
-
-        .divider {
-          width: 100%;
-          height: 1px;
-          margin: 40px 0 24px;
-          background: #303335;
+          max-width: 410px;
+          margin: 14px auto 0;
+          color: #697586;
+          font-size: 15px;
+          line-height: 1.7;
         }
 
         .detail {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 20px;
-          color: #747875;
-          font: 11px/1.6 "Courier New", monospace;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
+          margin-top: 20px;
+          color: #8792a2;
+          font-size: 12px;
         }
 
         .retry {
-          min-height: 46px;
-          margin-top: 38px;
-          padding: 0 20px;
-          border: 1px solid #77766f;
-          border-radius: 0;
-          background: transparent;
-          color: #e8e7e2;
+          min-height: 42px;
+          margin-top: 26px;
+          padding: 0 18px;
+          border: 1px solid #2457c5;
+          border-radius: 6px;
+          background: #2457c5;
+          color: #fff;
           cursor: pointer;
-          font: 12px/1 "Courier New", monospace;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          transition: border-color 160ms ease, background 160ms ease;
+          font: inherit;
+          font-size: 13px;
+          font-weight: 600;
+          transition: background-color 150ms ease, border-color 150ms ease;
         }
 
         .retry:hover {
-          border-color: #d39b59;
-          background: #d39b5912;
+          border-color: #1d48a5;
+          background: #1d48a5;
         }
 
         .retry:focus-visible {
-          outline: 2px solid #d39b59;
-          outline-offset: 4px;
+          outline: 3px solid #9bb8f5;
+          outline-offset: 3px;
         }
 
         .site-footer {
-          min-height: 66px;
-          border-top: 1px solid #303335;
-          color: #6f7370;
-          letter-spacing: 0.06em;
-          text-transform: none;
+          width: min(100%, 1080px);
+          min-height: 62px;
+          margin: 0 auto;
+          border-top: 1px solid #e5e9ef;
+          color: #8792a2;
+          font-size: 12px;
         }
 
-        @media (max-width: 560px) {
-          .site-header {
-            min-height: 70px;
+        @media (max-width: 480px) {
+          .outage-page {
+            padding: 0 20px;
           }
 
-          .header-note {
-            font-size: 9px;
+          .site-header {
+            min-height: 64px;
           }
 
           .message {
-            padding: 54px 0 64px;
-          }
-
-          .description {
-            font-size: 14px;
-          }
-
-          .detail {
-            align-items: flex-start;
-            flex-direction: column;
-            gap: 6px;
+            padding: 36px 0;
           }
 
           .site-footer {
-            align-items: flex-start;
-            flex-direction: column;
-            justify-content: center;
-            gap: 4px;
-            padding: 14px 0;
+            min-height: 58px;
+            font-size: 11px;
           }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          *,
-          *::before,
-          *::after {
-            scroll-behavior: auto !important;
-            transition-duration: 0.01ms !important;
+          .retry {
+            transition: none;
           }
         }
       </style>
 
       <header class="site-header">
-        <span class="brand">EXPOTRADEX</span>
-        <span class="header-note"><span class="status-dot" aria-hidden="true"></span>Service interruption</span>
+        <span class="brand">ExpoTradex</span>
       </header>
 
       <section class="message" aria-labelledby="outage-title">
-        <div class="error-code">HTTP 503 · Service unavailable</div>
-        <h1 id="outage-title">We’ll be back shortly.</h1>
+        <div class="status">Service temporarily unavailable</div>
+        <h1 id="outage-title">We’ll be back soon.</h1>
         <p class="description">
-          We’re temporarily unable to load this page. Please wait a moment, then try again.
+          We’re having trouble loading the site right now. Please try again in a few minutes.
         </p>
-        <div class="divider" role="presentation"></div>
-        <div class="detail">
-          <span>Request could not be completed</span>
-          <span>Please try again shortly</span>
-        </div>
         <button class="retry" type="button" onclick="window.location.reload()">Try again</button>
+        <div class="detail">Thank you for your patience.</div>
       </section>
 
       <footer class="site-footer">
         <span>ExpoTradex</span>
-        <span>We apologize for the interruption.</span>
+        <span>We apologize for the inconvenience.</span>
       </footer>
     </div>
     <script type="module" src="/src/main.tsx"></script>
